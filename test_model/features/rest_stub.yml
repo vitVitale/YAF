@@ -1,0 +1,185 @@
+---
+epic: Питонячий СТ фреймворк
+feature: Проверки REST - STUB взаимодействия
+
+setup:
+  once:
+    after:
+      - command: Выполнить Bash скрипт
+        params:
+          text: |-
+            sleep 0.5
+          expected: 'NO SAVE'
+      - command: Отправить запрос REST-stubAPI
+        params:
+          text: |-
+            curl -X DELETE '{{ BASE_PATH stubAPI }}/stubs'
+          expected: 'HTTP CODE: 200'
+      - command: Отправить запрос REST-stubAPI
+        params:
+          text: |-
+            curl -X DELETE '{{ BASE_PATH stubAPI }}/requests'
+          expected: 'HTTP CODE: 200'
+
+########################################################################################################################
+
+tests:
+  - name: Проверки взаимодействия с заглушкой
+    test_data:
+      - { query: 'шансон про новый год', code: '201' }
+      - { query: 'новогодний инди', code: '201' }
+      - { query: 'инди рок про новый год', code: '201' }
+      - { query: 'новогодний блюз', code: '201' }
+      - { query: 'блюз в стиле новый год', code: '201' }
+      - { query: 'рождественский соул', code: '201' }
+      - { query: 'соул про новый год', code: '200' }
+      - { query: 'новогодний джаз', code: '200' }
+      - { query: 'рэп про новый год', code: '200' }
+      - { query: 'новогодний рэп', code: '200' }
+      - { query: 'джаз на новый год', code: '200' }
+      - { query: 'рождественская классика', code: '200' }
+      - { query: 'классическая музыка на новый год', code: '401' }
+      - { query: 'песни из праздничных фильмов', code: '401' }
+      - { query: 'песни из фильмов про новый год', code: '401' }
+      - { query: 'наши песни про новый год', code: '401' }
+      - { query: 'наши новогодние песни', code: '401' }
+      - { query: 'русские песни праздничные', code: '401' }
+      - { query: 'праздничные песни на русском', code: '401' }
+      - { query: 'про новогодние подарки', code: '305' }
+      - { query: 'про новогодние подарки', code: '305' }
+      - { query: 'новогодний женский вокал', code: '305' }
+      - { query: 'женщина поет новогодние', code: '305' }
+      - { query: 'рождественские в мужском исполнении', code: '305' }
+      - { query: 'мужчины поют рождественские', code: '404' }
+      - { query: 'старый год уходи', code: '404' }
+      - { query: 'новогодняя акустика под гитару', code: '404' }
+    steps:
+      - command: Отправить запрос REST-stubAPI
+        params:
+          text: |-
+            curl -X PUT '{{ BASE_PATH stubAPI }}/define_stub?url=myStub/{{ REGEX [a-z]{9} }}' \
+            -H 'Content-Type: application/json' \
+            -H 'accept: */*' \
+            -d '{
+              "status": {{ code }},
+              "body": {
+                "query": "{{ query }}",
+                "minimalAmount": {{ REGEX 1[0-9]{10} }}
+              }
+            }'
+          expected: 'HTTP CODE: 200'
+      - command: Отправить запрос REST-stubAPI
+        params:
+          text: |-
+            curl -X POST '{{ BASE_PATH stubAPI }}/stub/{{ JPATH : RS_1 : $.url }}' \
+            -H 'Content-Type: application/json' \
+            -H 'accept: */*' \
+            -d '{ "stat": "xma" }'
+          expected: 'HTTP CODE: {{ code }}'
+      - command: Проверяем значение поля ответа
+        params:
+          text: |-
+            JPATH : RS_2 : $.query
+          expected: '{{ query }}'
+
+########################################################################################################################
+
+  - name: Проверки асинхронного взаимодействия с заглушкой
+    test_data:
+      - { query: 'гуцериев', code: '201' }
+      - { query: 'восьмого марта на работе', code: '201' }
+      - { query: 'офисная восьмого марта', code: '201' }
+      - { query: 'подборку праздничных песен для коллег', code: '201' }
+      - { query: 'поздравления от артистов для женщин', code: '201' }
+      - { query: 'рок музыку в женском исполнении', code: '303' }
+      - { query: 'попсовую музыку в женском исполнении', code: '303' }
+      - { query: 'электронную музыку в формате флак', code: '303' }
+      - { query: 'инди музыку в высоком качестве', code: '303' }
+      - { query: 'поп музыку в формате флак', code: '303' }
+      - { query: 'хип хоп музыку в формате флак', code: '303' }
+      - { query: 'классическую музыку в формате флак', code: '403' }
+      - { query: 'джазовую музыку в формате флак', code: '403' }
+      - { query: 'рок в формате флак', code: '403' }
+      - { query: 'плейлист с музыкой в формате флак', code: '403' }
+      - { query: 'классический рок', code: '403' }
+      - { query: 'классический рейв', code: '403' }
+      - { query: 'классика хип-хопа', code: '403' }
+      - { query: 'классика джаза', code: '200' }
+      - { query: 'поп музыку двухтысячных', code: '200' }
+      - { query: 'номинант гремми 2021', code: '200' }
+      - { query: 'гремми 2021 лауреат', code: '200' }
+      - { query: 'премия гремми 2021', code: '200' }
+      - { query: 'гремми', code: '200' }
+      - { query: 'плейлист в день святого валентина', code: '200' }
+    steps:
+      - command: Отправить асинхронный запрос REST-stubAPI
+        params:
+          text: |-
+            curl -X PUT '{{ BASE_PATH stubAPI }}/define_stub?url=myStub/{{ REGEX [a-z]{9} }}' \
+            -H 'Content-Type: application/json' \
+            -H 'accept: */*' \
+            -d '{
+              "status": {{ code }},
+              "body": {{ GET_FILE stub_body.json }}
+            }'
+      - command: Получить ответ на асинхронный запрос REST-stubAPI
+        params:
+          text: |-
+            RQ_1
+          expected: 'HTTP CODE: 200'
+      - command: Отправить асинхронный запрос REST-stubAPI
+        params:
+          text: |-
+            curl -X GET '{{ BASE_PATH stubAPI }}/stub/{{ JPATH : RS_1 : $.url }}' \
+            -H 'Content-Type: application/json' \
+            -H 'accept: */*'
+      - command: Получить ответ на асинхронный запрос REST-stubAPI
+        params:
+          text: |-
+            RQ_2
+          expected: 'HTTP CODE: {{ code }}'
+      - command: Проверяем значение поля ответа
+        params:
+          text: |-
+            JPATH : RS_2 : $.payload.message
+          expected: '{{ query }}'
+
+########################################################################################################################
+
+  - name: Просмотр инфо об запросах к заглушке
+    test_data:
+      - { query: 'Позови Джой!', url_params: '' }
+      - { query: 'Позови Джой!', url_params: '?fetch=body' }
+      - { query: 'Позови Джой!', url_params: '?fetch=headers' }
+      - { query: 'Позови Джой!', url_params: '?fetch=params' }
+      - { query: 'Позови Джой!', url_params: '?fetch=method' }
+    steps:
+      - command: Отправить запрос REST-stubAPI
+        params:
+          text: |-
+            curl -X PUT '{{ BASE_PATH stubAPI }}/define_stub?url=myStub/experiment/end' \
+            -H 'Content-Type: application/json' \
+            -H 'accept: */*' \
+            -d '{
+              "status": 200,
+              "body": {
+                "query": "{{ query }}",
+                "minimalAmount": {{ REGEX 1[0-9]{10} }}
+              }
+            }'
+          expected: 'HTTP CODE: 200'
+      - command: Отправить запрос REST-stubAPI
+        params:
+          text: |-
+            curl -X POST '{{ BASE_PATH stubAPI }}/stub/myStub/experiment/end?q=mySuperQuery&isa=1109&isTest=true' \
+            -H 'Content-Type: application/json' \
+            -H 'accept: */*' \
+            -d '{ "stat": "xma" }'
+          expected: 'HTTP CODE: 200'
+      - command: Отправить запрос REST-stubAPI
+        params:
+          text: |-
+            curl -X GET '{{ BASE_PATH stubAPI }}/request/myStub/experiment/end{{ url_params }}' \
+            -H 'accept: */*'
+          expected: 'HTTP CODE: 200'
+

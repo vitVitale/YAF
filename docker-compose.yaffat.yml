@@ -1,0 +1,32 @@
+version: "3.0"
+services:
+  tests_runner:
+    build:
+      context: .
+      dockerfile: Dockerfile
+#    image: vitvitale/yaf_runner:1.8.6
+    container_name: tests_runner
+    restart: 'no'
+    networks:
+      - ST_network
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./test_model/:/app/test_model/
+      - ./_db:/app/migrations_tools/db
+    environment:
+      TZ: Europe/Moscow
+#      BUILD_REPORT: 'No'
+      THREADS: 4
+      TAGS: 'not (beta_v3 or delta_v2)'
+      TEST_MODEL: 'kafka_test.yml,rest_test.yml'
+      CUSTOM_CTX: 'test_model._extensions_.context'
+      DECRYPT_KEY: '*****'
+      FLAKY_RERUN: 0
+#     JIRA envs are required to TestCycle creation only
+      JIRA_PROJECT: your_project_key
+      JIRA_USER: your_user
+      JIRA_PASS: your_pass
+
+networks:
+  ST_network:
+    external: true

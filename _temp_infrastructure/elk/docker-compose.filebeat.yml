@@ -1,0 +1,15 @@
+version: "3.0"
+services:
+  filebeat:
+    build: 
+      context: .
+      dockerfile: Dockerfile_beat
+    container_name: filebeat
+    networks:
+      - ST_network
+    volumes:
+      - ./log_dir/sidecar.log:/workdir/sidecar.log
+
+networks:
+  ST_network:
+    external: true

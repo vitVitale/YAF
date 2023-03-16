@@ -1,0 +1,110 @@
+---
+kafka:
+  - name: "Kafka_test"
+    in_topics: 'myTopic'
+    out_topics:
+      - 'myTopic'
+      - 'myTopic2'
+      - 'myTopic3'
+    bootstrap_servers: localhost:9092
+    auto_offset_reset: latest               # earliest or latest (default)  [optional field]
+    pop_when_find: true                     # boolean value [optional field]
+    group_id: 'qa-at'
+    ssl:
+      verify: false
+#      verify: 'client.ca.certs.pem'
+#      cert: 'client.cert.pem'
+#      key: 'client.key.pem'
+rest:
+  - name: 'stubAPI'
+    path: 'http://localhost:8022'
+    disable_retryer: true                   # boolean value (base retry policy of 5xx statuses) [optional field]
+    default_timeout: 30                     # int value [optional field]
+    ssl:
+      verify: false
+#      verify: 'client.ca.certs.pem'
+#      cert: 'client.cert.pem'
+#      key: 'client.key.pem'
+cache:
+  - name: 'Ignite_test'
+    addresses:
+      - '127.0.0.1:10800'
+    username: 'ig_user'                     # [optional field]
+    password: 'admin'                       # [optional field]
+    ssl:                                    # [optional block]
+      enable: true
+      cert_reqs: CERT_REQUIRED
+      keyfile: 'client.key.pem'
+      keyfile_password: 'your_secret'
+      certfile: 'client.cert.pem'
+      ca_certfile: 'client.ca.certs.pem'
+sqldb:
+  - name: 'localDB'
+    drivername: postgresql                  # postgresql OR oracle
+    host: localhost
+    port: 5432
+    database: postgres
+    username: postgres
+    password: admin
+mongodb:
+  - name: 'mongoTest'
+    host: mongo_db
+    port: 27017
+    username: admin
+    password: myPass
+elasticsearch:
+  - name: 'ELK_test'
+    hosts:
+      - 'https://127.0.0.1:9200'
+    username: 'user'                        # [optional field]
+    password: '****'                        # [optional field]
+#    ssl:                                   # [optional block]
+#      client_cert: 'client.cert.pem'
+#      client_key: 'client.key.pem'
+#      ca_certs: 'client.ca.certs.pem'
+redis:
+  - name: 'Redis_test'
+    node:
+      - host: localhost
+        port: 7001
+    pass: admin
+websocket:
+  - name: 'WS_test'
+    path: 'wss://localhost'
+#    token: 'eyJ0eXAiOiOiJub25lIn0....'     # set auth header [optional field]
+    launch: false
+    ssl:
+      verify: false
+#      verify: 'client.ca.certs.pem'
+#      cert: 'client.cert.pem'
+#      key: 'client.key.pem'
+graphql:
+  - name: 'GQL_test'
+    path: 'http://localhost:8088/graphql'
+    ssl:
+      enabled: 'false'
+ssh_sftp:
+  - name: 'remoteAgent'
+    hostname: '192.168.1.2'
+    username: 'user'
+    password: '****'
+    look_for_keys: false
+    allow_agent: false
+thrift:
+  - name: 'thriftAPI'
+    host: '127.0.0.1'
+    port: 6000
+#    createDTOatRuntime: false               # [optional field]
+    file: 'example/example.thrift'
+    class: 'example.client.ThriftExampleCL'
+grpc:
+  - name: 'grpcAPI'
+    host: 'localhost'
+    port: 50051
+    proto:
+      - 'example/example.proto'
+docker:
+  container_log_listener:
+    - 'stub'
+    - 'postgres'
+    - 'kafka'

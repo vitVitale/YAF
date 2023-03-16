@@ -1,0 +1,24 @@
+databaseChangeLog:
+ - preConditions:
+   - runningAs:
+      username: postgres
+
+ - changeSet:
+    id: 3
+    author: Vitaly V
+    changes:
+    - insert:
+       tableName: person
+       columns:
+       - column:
+          name: firstname
+          value: Gregor
+       - column:
+          name: lastname
+          value: Bjshtikevich
+       - column:
+          name: state
+          value: Y
+       - column:
+          name: username
+          value: polandGuy

@@ -1,0 +1,178 @@
+---
+epic: Питонячий СТ фреймворк
+feature: Проверки кафки
+
+setup:
+  only:
+    - tags: ['beta_v3', 'delta_v2']
+      before:
+        - command: Выполнить Bash скрипт
+          params:
+            text: 'echo "only before (beta_v3 or delta_v2)"'
+            expected: 'NO SAVE'
+      after:
+        - command: Выполнить Bash скрипт
+          params:
+            text: 'echo "only after (beta_v3 or delta_v2)"'
+            expected: 'NO SAVE'
+    - tags: ['omega', 'gamma']
+      before:
+        - command: Выполнить Bash скрипт
+          params:
+            text: 'echo "only before (omega or gamma)"'
+            expected: 'NO SAVE'
+      after:
+        - command: Выполнить Bash скрипт
+          params:
+            text: 'echo "only after (omega or gamma)"'
+            expected: 'NO SAVE'
+
+########################################################################################################################
+
+tests:
+  - name: Test with Test Data
+    test_data:
+      - { id: '1262', provider: 'gismeteo' }
+      - { id: '2402', provider: 'mos' }
+      - { id: '3947', provider: 'yandex weather' }
+      - { id: '4034', provider: 'other' }
+      - { id: '5308', provider: 'apple' }
+      - { id: '6305', provider: 'sung' }
+      - { id: '7050', provider: 'bing' }
+      - { id: '8383', provider: 'geo_t' }
+      - { id: '9249', provider: 'aress' }
+      - { id: '1084', provider: 'yahoo' }
+      - { id: '1193', provider: 'google' }
+      - { id: '1288', provider: 'mailru' }
+      - { id: '1338', provider: 'tao bao' }
+      - { id: '1421', provider: 'wang ox' }
+      - { id: '1528', provider: 'quraanta' }
+      - { id: '1692', provider: 'exlity' }
+      - { id: '1720', provider: 'ancora' }
+      - { id: '1838', provider: 'uyo' }
+      - { id: '1980', provider: 'mash' }
+      - { id: '2048', provider: 'farolex' }
+    steps:
+      - command: Отправить расширенный запрос в Kafka-Kafka_test
+        params:
+          text: |-
+            PARTITION: 0
+            TOPIC: myTopic3
+            KEY: myKey_01
+            HEADER: [ kafka_replyTopic :: dpToKis ]
+            HEADER: [ dp_callback_id :: d4aefae6-5a62-44d7-baf2-ed085aeb0bbd ]
+            MESSAGE: {
+              "messageId": {{ REGEX [1-9][0-9]{50} }},
+              "payload": {
+                "category": "WEATHER",
+                "providerId": "{{ provider }}",
+                "gm_request_type": "fact_by_id",
+                "request_data": {
+                  "id": "{{ REGEX {{ id }}(s|n) }}",
+                  "link": "wyyyat__duwud"
+                }
+              }
+            }
+      - command: Получить запрос с таймаутом из Kafka-Kafka_test
+        params:
+          text: |-
+            {{ JPATH : RQ_1 : $.messageId : str(this) }}
+          expected: 30
+      - command: Проверяем значение поля ответа
+        params:
+          text: |-
+            JPATH : RS_1 : $.payload.providerId
+          expected: '{{ provider }}'
+      - command: Отправить запрос в Kafka-Kafka_test
+        params:
+          text: |-
+            {
+              "messageId": 1000,
+              "someFrom1Rq": "{{ HEADERS_RS_1 : dp_callback_id }}",
+              "payload": {
+                "category": {{ REGEX {{ JPATH : RQ_1 : $.messageId }}[0-9]{3} }}{{ REGEX [1-9]{1} }}
+              }
+            }
+      - command: Получить запрос из Kafka-Kafka_test
+        params:
+          text: |-
+            {{ JPATH : RQ_2 : $.messageId : str(this) }}
+#      - command: Проверяем значение/wrong поля ответа
+      - command: Проверяем значение поля ответа
+        params:
+          text: |-
+            JPATH : RS_1 : $.messageId
+          expected: 'JPATH : RQ_1 : $.messageId'
+
+########################################################################################################################
+
+  - name: Test singleton - without TD
+    tags: ['beta_v3', 'alpha_v1.1']
+    flaky: 1
+    steps:
+      - command: Отправить запрос в Kafka-Kafka_test
+        params:
+          text: |-
+            {
+              "messageId": {{ REGEX [1-9][0-9]{50} }},
+              "payload": {
+                "category": "WEATHER"
+              }
+            }
+      - command: Получить запрос из Kafka-Kafka_test
+        params:
+          text: |-
+            {{ JPATH : RQ_1 : $.messageId }}
+      - command: Проверяем значение поля ответа
+        params:
+          text: |-
+            JPATH : RS_1 : $.messageId
+          expected: 'REGEX \d{6}'
+      - command: Проверяем схемой ответ-RS_1
+        params:
+          text: |-
+            {{ GET_FILE schema.json }}
+
+########################################################################################################################
+
+  - name: Test with resource file
+    tags: ['alpha_v1.1', 'delta_v2']
+    test_data:
+      - { query: 'Какая погода ?', channel: 'B2C' }
+      - { query: 'Расскажи новости', channel: 'B2E' }
+      - { query: 'Как дела ?', channel: 'B2D' }
+    steps:
+      - command: Отправить запрос в Kafka-Kafka_test
+        params:
+          text: |-
+            {{ GET_FILE some_request.json }}
+      - command: Получить запрос из Kafka-Kafka_test
+        params:
+          text: |-
+            {{ JPATH : RQ_1 : $.messageId }}
+      - command: Проверка наличия/отсутствия элемента в ответе
+        params:
+          text: |-
+            JPATH : RS_1 : $.payload.device.channel
+          expected: true
+      - command: Проверяем значение поля ответа
+        params:
+          text: |-
+            JPATH : RS_1 : $.payload.device.channel
+          expected: '{{ channel }}'
+      - command: Проверяем значение поля ответа
+        params:
+          text: |-
+            JPATH : RS_1 : $.payload.device.capabilities
+          expected: {"screen": {"available": true},"speak": {"available": true},"misc": {"available": true}}
+      - command: Проверяем несколько полей ответа
+        params:
+          text:
+            - 'JPATH : RS_1 : $.payload.device.capabilities.screen.available'
+            - 'JPATH : RS_1 : $.payload.current_app_info.projectId'
+            - 'JPATH : RS_1 : $.payload.annotations.asr_sentiment.probas[1]'
+          expected:
+            - 'True'
+            - 'REGEX .+387.+'
+            - 1.0
+

@@ -1,0 +1,15 @@
+databaseChangeLog:
+ - preConditions:
+   - runningAs:
+      username: postgres
+
+ - changeSet:
+    id: 4
+    author: Vitaly V
+    changes:
+    - addLookupTable:
+       existingTableName: person
+       existingColumnName: state
+       newTableName: state
+       newColumnName: id
+       newColumnDataType: char(2)

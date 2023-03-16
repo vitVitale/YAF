@@ -1,0 +1,36 @@
+version: "3.0"
+services:
+  zookeeper:
+    image: 'bitnami/zookeeper:3.7.0'
+    container_name: zookeeper
+    ports:
+      - '2181:2181'
+    networks:
+      - ST_network
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    restart: 'no'
+  kafka:
+    image: 'bitnami/kafka:2.8.1'
+    container_name: kafka
+    ports:
+      - '9092:9092'
+      - '29092:29092'
+    networks:
+      - ST_network
+    environment:
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      - KAFKA_LISTENERS=PLAINTEXT://:29092,PLAINTEXT_HOST://:9092
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+      - KAFKA_AUTO_CREATE_TOPICS_ENABLE=true
+      - KAFKA_ADVERTISED_HOST_NAME=kafka
+    restart: 'no'
+    depends_on:
+      - zookeeper
+
+networks:
+  ST_network:
+    external: true

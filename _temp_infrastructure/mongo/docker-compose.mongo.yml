@@ -1,0 +1,18 @@
+version: "3.0"
+services:
+  mongo:
+    image: mongo:latest
+    container_name: mongo_db
+    restart: 'no'
+    ports:
+      - '7017:27017'
+    networks:
+      - ST_network
+    environment:
+      TZ: Europe/Moscow
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: myPass
+
+networks:
+  ST_network:
+    external: true

@@ -1,0 +1,48 @@
+databaseChangeLog:
+ - preConditions:
+   - runningAs:
+      username: postgres
+
+ - changeSet:
+    id: 1
+    author: Vitaly V
+    changes:
+    - createTable:
+       tableName: person
+       columns:
+       - column:
+          name: id
+          type: int
+          autoIncrement: true
+          constraints:
+           primaryKey: true
+           nullable: false
+       - column:
+          name: firstname
+          type: varchar(50)
+       - column:
+          name: lastname
+          type: varchar(50)
+          constraints:
+           nullable: false
+       - column:
+          name: state
+          type: char(2)
+    - createTable:
+       tableName: abc_logs
+       columns:
+       - column:
+          name: userId
+          type: varchar(36)
+       - column:
+          name: query
+          type: text
+       - column:
+          name: pronounceText
+          type: text
+       - column:
+          name: intent
+          type: varchar(100)
+       - column:
+          name: scenario
+          type: varchar(150)

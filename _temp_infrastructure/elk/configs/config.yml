@@ -1,0 +1,58 @@
+app:
+  kafka:
+    consumers:
+      big_brother:
+        bootstrap_servers: kafka:29092
+        topics:
+        - ToSidecar
+      peeper:
+        bootstrap_servers: kafka:29092
+        group_id: sidecar_group
+        topics:
+        - FromSidecar
+    producer:
+      bootstrap_servers: kafka:29092
+      topic: SidecarToIr
+
+jaeger:
+  config:
+    logging: False
+    enabled: False
+
+logging:
+  version: 1
+  disable_existing_loggers: false
+  formatters:
+    standard:
+      "()": sidecar.log.SanitizedFormatter
+      format: '[%(asctime)s] [%(process)d] [%(levelname)s] [%(name)s] %(message)s'
+    json_formatter:
+      "()": sidecar.log.SanitizedJsonFormatter
+      json_ensure_ascii: false
+      timestamp: true
+      format: "%(created)f %(msecs)d %(relativeCreated)d %(levelname)s %(name)s %(asctime)s %(module)s  %(message)s"
+  handlers:
+    default:
+      class: logging.StreamHandler
+      formatter: standard
+      level: DEBUG
+    file_handler:
+      backupCount: 720
+      encoding: utf-8
+      filename: "../../../home/sidecar.log"
+      formatter: json_formatter
+      class: logging.handlers.RotatingFileHandler
+      maxBytes: 15728640
+  loggers:
+    intent_recornizer_sidecar:
+      handlers:
+        - default
+        - file_handler
+      level: INFO
+      propagate: false
+  root:
+    handlers:
+      - default
+      - file_handler
+    level: INFO
+    propagate: true

@@ -1,0 +1,59 @@
+http://localhost:3000/
+http://localhost:9090/graph
+http://localhost:9091/#
+
+
+
+curl -X POST 'http://localhost:9091/metrics/job/pushgateway' \
+-d '
+# TYPE automated_tests_run gauge
+automated_tests_run{label="PilotTeam"} 18
+# TYPE total_test_cases gauge
+total_test_cases{label="PilotTeam"} 70
+'
+
+curl -X POST 'http://localhost:9091/metrics/job/pushgateway' \
+-d '
+# TYPE automated_tests_run gauge
+automated_tests_run{label="PilotTeam"} 23
+# TYPE total_test_cases gauge
+total_test_cases{label="PilotTeam"} 75
+'
+
+curl -X POST 'http://localhost:9091/metrics/job/pushgateway' \
+-d '
+# TYPE automated_tests_run gauge
+automated_tests_run{label="PilotTeam"} 35
+# TYPE total_test_cases gauge
+total_test_cases{label="PilotTeam"} 75
+'
+
+curl -X POST 'http://localhost:9091/metrics/job/pushgateway' \
+-d '
+# TYPE automated_tests_run gauge
+automated_tests_run{label="PilotTeam"} 48
+# TYPE total_test_cases gauge
+total_test_cases{label="PilotTeam"} 81
+'
+
+curl -X POST 'http://localhost:9091/metrics/job/pushgateway' \
+-d '
+# TYPE automated_tests_run gauge
+automated_tests_run{label="PilotTeam"} 67
+# TYPE total_test_cases gauge
+total_test_cases{label="PilotTeam"} 83
+'
+
+
+====================================================================================================
+
+
+curl -X POST 'http://localhost:9091/metrics/job/pushgateway' \
+-d '
+# TYPE last_run gauge
+last_run{label="Successful"} 57
+last_run{label="Tests defects"} 3
+last_run{label="Product defects"} 7
+# TYPE rerun_tests gauge
+rerun_tests 0
+'

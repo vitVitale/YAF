@@ -1,0 +1,18 @@
+version: "3.0"
+services:
+  thrift_server_example:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: thrift_server_example
+    restart: 'no'
+    ports:
+      - '6000:6000'
+    networks:
+      - ST_network
+    volumes:
+      - ./example/:/app/
+
+networks:
+  ST_network:
+    external: true

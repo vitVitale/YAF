@@ -1,0 +1,23 @@
+{
+  "payload": {
+    "message": "{{ query }}",
+    "asr_normalized_message": "",
+    "original_message_name": "original_message_name",
+    "device": {
+      "channel": "B2C",
+      "platform_name": "IOS",
+      "capabilities": {
+        "screen": {
+          "available": true
+        },
+        "misc": {
+          "available": true
+        },
+        "speak": {
+          "available": true
+        }
+      },
+      "additionalInfo": {}
+    }
+  }
+}

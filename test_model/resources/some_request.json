@@ -1,0 +1,39 @@
+{
+  "messageId": "{{ REGEX [1-9][0-9]{5} }}",
+  "payload": {
+    "message": "{{ query }}",
+    "device": {
+      "channel": "{{ channel }}",
+      "capabilities": {
+        "screen": {
+          "available": true
+        },
+        "misc": {
+          "available": true
+        },
+        "speak": {
+          "available": true
+        }
+      }
+    },
+    "annotations": {
+      "asr_sentiment": {
+        "classes": [
+          "positive",
+          "neutral",
+          "negative"
+        ],
+        "probas": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      }
+    },
+    "current_app_info": {
+      "systemName": "popcorn",
+      "projectId": "38274-234874-3297",
+      "is_monopoly": true
+    }
+  }
+}

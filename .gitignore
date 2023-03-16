@@ -1,0 +1,16 @@
+/app/.pytest_cache/
+/yaf/app/.pytest_cache/
+/test_model/allure-result/
+/test_model/allure-report/
+/_temp_infrastructure/db/restore_data/reWorkTest.csv
+/_temp_infrastructure/elk/log_dir/
+/_temp_infrastructure/elk/container_logs
+/yaf_lib.egg-info/
+/dist/
+/build/
+/.certs/
+/test_model/secrets/
+/tests_results.csv
+/pip.conf
+/.idea/
+/_base/pip.conf

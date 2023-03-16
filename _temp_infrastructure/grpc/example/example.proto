@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package com.company.service;
+
+import "google/protobuf/wrappers.proto";
+
+option java_multiple_files = true;
+option java_package = "com.company.example.proto.service";
+
+enum CheckStatus {
+  ALLOWED = 0;
+  DENIED = 1;
+}
+
+enum ErrorCode {
+  NO_ERROR = 0;
+  BLOCKED_BY_SANCTIONS = 1;
+  BLOCKED_BY_NEED_SURVEY_PASSED = 2;
+}
+
+message CheckResult {
+  CheckStatus status = 1;
+  ErrorCode error_code = 2;
+  google.protobuf.StringValue error_message = 3;
+}
+
+message OperationData {
+  enum Direction {BUY = 0; SELL = 1;}
+  enum OrderType {MARKET = 0; LIMIT = 1; STOP_LOSS = 2; TAKE_PROFIT = 3;}
+  google.protobuf.StringValue portfolio_account_id = 1;
+  google.protobuf.StringValue currency = 2;
+  Direction direction = 3;
+  OrderType order_type = 4;
+  google.protobuf.StringValue ticker = 5;
+  google.protobuf.StringValue class_code = 6;
+  google.protobuf.Int64Value instrument_count = 7;
+  google.protobuf.StringValue total_sum = 8;
+  google.protobuf.StringValue commission_value = 9;
+  google.protobuf.StringValue value_by_instrument_item = 10;
+  google.protobuf.StringValue value_by_instrument_item_in_percents = 11;
+}
+
+message CheckRequest {
+  OperationData operation = 1;
+  google.protobuf.StringValue ucp_id = 2;
+}
+
+service ComplianceCheckService {
+  rpc CheckOperation (CheckRequest) returns (CheckResult) {};
+}
+
+message SanctionItemDto {
+  google.protobuf.StringValue ucp_id = 1;
+  google.protobuf.StringValue type_code = 2;
+}
+
+message SanctionsDto {
+  repeated SanctionItemDto items = 1;
+}
+
+service ComplianceLoadService {
+  rpc LoadSanctionItems (SanctionsDto) returns (google.protobuf.BoolValue) {};
+}

@@ -1,0 +1,22 @@
+version: "3.0"
+services:
+  ignite_se:
+    image: apacheignite/ignite:2.14.0
+    container_name: ignite_se
+    restart: 'no'
+    ports:
+      - '10800:10800'
+      - '11211:11211'
+      - '47100:47100'
+      - '47500:47500'
+      - '49112:49112'
+    networks:
+      - ST_network
+    volumes:
+      - ./configs/ignite_config.xml:/opt/ignite/config/customIgniteConfiguration.xml
+    environment:
+      - IGNITE_QUIET=false
+
+networks:
+  ST_network:
+    external: true

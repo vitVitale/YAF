@@ -1,0 +1,19 @@
+version: "3.0"
+services:
+  sidecar:
+    image: ${IMAGE_NAME}
+    container_name: sidecar
+    networks:
+      - ST_network
+    ports:
+      - '8080:8080'
+    volumes:
+      - ./configs/config.yml:/opt/config.yml
+      - ./log_dir/:/home/
+#    environment:
+#      - SIDECAR_CONFIG_PATH=
+#      - SIDECAR_SECRET_CONFIG_PATH=
+
+networks:
+  ST_network:
+    external: true
