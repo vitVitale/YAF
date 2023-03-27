@@ -102,7 +102,7 @@ grpc:
     host: 'localhost'
     port: 50051
     proto:
-      - 'example/example.proto'
+      - 'example/example_service.proto'
 docker:
   container_log_listener:
     - 'stub'

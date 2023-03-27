@@ -1,0 +1,66 @@
+---
+epic: Питонячий СТ фреймворк
+feature: Проверки GRPC (Protobuf) взаимодействия
+
+tests:
+  - name: Тест gRPC заглушки
+    test_data:
+      - { service: 'ExampleService', rpc: 'GetUserById' }
+    steps:
+      - command: Отправить запрос REST-stubAPI
+        params:
+          text: |-
+            curl -X POST 'http://localhost:8022/define_stub?service={{ service }}&rpc={{ rpc }}' \
+            -H 'Content-Type: application/json' \
+            -d '{
+              "status": "OK",
+              "user": {
+                "name": "Vit",
+                "surname": "Vitale",
+                "email": "viiiittt@gmail.com",
+                "phone": "123456789",
+                "subscriptionData": [
+                  {
+                    "isPremium": {
+                        "data": true
+                    },
+                    "expiresAt": {
+                        "null": null
+                    },
+                    "serviceType": "FOOD_DELIVERY",
+                    "agreementDate": "2023-01-13T20:38:31.000223242Z"
+                  }
+                ]
+              }
+            }'
+          expected: 'HTTP CODE: 200'
+      - command: Отправить json запрос GRPC-grpcAPI
+        params:
+          text: |-
+            SERVICE: {{ service }}
+            RPC: {{ rpc }}
+            UserByIdRequest: |-
+              {
+                "id": 18283
+              }
+      - command: Проверяем значение поля ответа
+        params:
+          text: |-
+            JPATH : RS_2 : $.status
+          expected: "OK"
+      - command: Проверка наличия/отсутствия нескольких элементов в ответе
+        params:
+          text:
+            - { target: 'JPATH : RS_2 : $.user.subscriptionData[0].expiresAt.data', expected: false }
+            - { target: 'JPATH : RS_2 : $.user.phone',                               expected: true }
+            - { target: 'JPATH : RS_2 : $.error',                                   expected: false }
+      - command: Проверяем несколько полей ответа
+        params:
+          text:
+            - 'JPATH : RS_2 : $.user.name'
+            - 'JPATH : RS_2 : $.user.surname'
+            - 'JPATH : RS_2 : $.user.subscriptionData[0].agreementDate'
+          expected:
+            - 'Vit'
+            - 'Vitale'
+            - 'REGEX \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{9}Z'
