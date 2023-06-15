@@ -98,11 +98,14 @@ class CollectedTests:
     @staticmethod
     def _setup_applier(instance, default_set, custom_set):
         if isinstance(custom_set, list) and 'tags' in instance:
-            # TODO:: bug with multiple setups, need rework
+            before, after = [], []
             for tag in instance['tags']:
                 for setup_instr in custom_set:
                     if tag in setup_instr['tags']:
-                        return setup_instr.get('before', None), \
-                               setup_instr.get('after', None)
+                        before.extend(setup_instr.get('before', []))
+                        after.extend(setup_instr.get('after', []))
+
+            if before or after:
+                return before, after
 
         return default_set[0], default_set[1]

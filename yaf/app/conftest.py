@@ -29,8 +29,8 @@ def pytest_collection_modifyitems(config, items):
             entity = item.callspec.params['_generator_']
             item.own_markers.append(Mark('allure_label', tuple([entity['feature']]), {'label_type': 'feature'}))
             item.own_markers.append(Mark('allure_label', tuple([entity['epic']]), {'label_type': 'epic'}))
-            # TODO:: jira key as tag
             if 'jira' in entity:
+                item.own_markers.append(Mark(entity["jira"], (), {}))
                 entity['name'] = f'({entity["jira"]}) - {entity["name"]}'
                 item.own_markers.append(Mark('allure_link', tuple([f'{JIRA_PATH}/{entity["jira"]}']),
                                              {'name': entity["jira"], 'link_type': 'test_case'}))

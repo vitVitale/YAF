@@ -35,7 +35,12 @@ def iterate_step_instruction(step: dict, invoker, args):
     freeze_counters = iterable_block.get('stop_rq_rs_counter', False)
     collection = Base.perform_replacement_and_return(iterable_block.get('collection')) \
         if isinstance(iterable_block.get('collection'), str) else iterable_block.get('collection')
-    # TODO:: need add retry
+    retry = iterable_block.get('retry')
+    if retry:
+        assert retry > 0, 'Количество повторов [iterable_by.retry] должно быть больше 0 !'
+        assert interruption, 'Для повторов необходимо указать условие прерывания в [iterable_by.collection] !'
+        collection = [_ for _ in range(retry)]
+        freeze_counters = True
 
     def perform_step():
         invoker(*args)
