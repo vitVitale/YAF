@@ -28,7 +28,7 @@ class ElasticCl:
                               indent=2,
                               ensure_ascii=False)
         except Exception as ex:
-            raise Exception(f'Не удалось получить документ!\n'
+            raise Exception(f'Failed to get document!\n'
                             f'{ex.__cause__}')
 
     def get_doc_by_index_and_query(self, index_es, query):
@@ -42,7 +42,7 @@ class ElasticCl:
                 else:
                     time.sleep(5)
 
-            # поля эластика возвращаются, как строки, поэтому нужно их "зачистить" от лишних кавычек и обратных слешей
+            # elastic fields are returned as strings, so you need to "clean" them from extra quotes and backslashes
             temp = re.sub(r'(?<=[^ ])\\"(?=[^"])', '"', json.dumps(body,
                                                                    indent=2,
                                                                    ensure_ascii=False))
@@ -50,7 +50,7 @@ class ElasticCl:
             return re.sub(r'"(?=[{])|(?<=[}])"', '', temp)
 
         except Exception as ex:
-            raise Exception(f'Не удалось получить документ!\n'
+            raise Exception(f'Failed to get document!\n'
                             f'{ex.__cause__}')
 
     def search_docs(self, INDEX, KQL, FIELD=None, SORT=None, LAST=None, TRANSFORM=None):
@@ -75,7 +75,7 @@ class ElasticCl:
                             request_timeout=10):
                 answers.append(hit['_source'])
         except Exception as ex:
-            raise Exception(f'Не удалось выполнить запрос!\n'
+            raise Exception(f'Failed to complete request!\n'
                             f'{ex.__cause__}')
         if TRANSFORM:
             answers = evaluate_injection(expression=TRANSFORM, answers=answers)

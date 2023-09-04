@@ -37,8 +37,8 @@ def iterate_step_instruction(step: dict, invoker, args):
         if isinstance(iterable_block.get('collection'), str) else iterable_block.get('collection')
     retry = iterable_block.get('retry')
     if retry:
-        assert retry > 0, 'Количество повторов [iterable_by.retry] должно быть больше 0 !'
-        assert interruption, 'Для повторов необходимо указать условие прерывания в [iterable_by.collection] !'
+        assert retry > 0, 'value of [iterable_by.retry] must be greater than 0 !'
+        assert interruption, 'For repetitions, you must specify a break condition in [iterable_by.interruption] !'
         collection = [_ for _ in range(retry)]
         freeze_counters = True
 
@@ -66,9 +66,9 @@ def iterate_step_instruction(step: dict, invoker, args):
                         Base.stash['iterator.key'] = key
                         perform_step()
                 case _:
-                    raise Exception('Не итерируемое значение в [iterable_by.collection] !')
+                    raise Exception('Non-iterable value in [iterable_by.collection] !')
             if interruption:
-                raise AssertionError("Условие из [iterable_by.interruption] не достигнуто !")
+                raise AssertionError("Condition from [iterable_by.interruption] is unreachable !")
         except InterruptedError:
             pass
 

@@ -54,15 +54,15 @@ class ClientStore:
 
     def __init__(self, config_set):
         if not os.path.isfile(API_CONTEXT):
-            raise Exception("файл API_CONTEXT отсутствует!!\n"
-                            "Воспользуйтесь README.md для корректного запуска.")
+            raise Exception("API_CONTEXT file is missing!!\n"
+                            "Use README.md to launch correctly.")
 
         with open(API_CONTEXT, "r", encoding='utf-8') as stream:
             try:
                 clients_context = yaml.safe_load(stream)
                 self.connect_yml_text = yaml.safe_dump(clients_context)
             except yaml.YAMLError as exc:
-                raise Exception(f'Не удалось распарсить файл {API_CONTEXT}\n{exc.__cause__}')
+                raise Exception(f'Failed to parse file {API_CONTEXT}\n{exc.__cause__}')
 
         self.clients_bus = {}
         self.__create_clients__(self.clients_bus, clients_context, config_set)
@@ -74,7 +74,7 @@ class ClientStore:
         if name in self.clients_bus.keys():
             return self.clients_bus.get(name)
         else:
-            raise Exception(f"Клиент: [ {name} ] не сконфигурирован!!")
+            raise Exception(f"Client: [ {name} ] not configured!!")
 
     def finalize(self):
         for client in self.clients_bus.values():

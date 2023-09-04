@@ -12,9 +12,9 @@ setup(
         'yaf.steps',
         'yaf.utils'
     ]),
-    version='1.8.6',
+    version='1.8.7',
     description='YAF (Yet Another Framework) library for backend automated testing with YAML contract usage',
-    author='Vasilyuk Vitaly',
+    author='Vasiliuk Vitalii',
     author_email="vitvasilyuk@gmail.com",
     license='----',
     include_package_data=True,

@@ -3,7 +3,7 @@ MAINTAINER Vitaly Vasilyuk
 USER root
 
 # Copy YAF sources ...
-COPY yaf /app/yaffat
+COPY yaf /app/yaf
 COPY requirements.txt /app/
 COPY run.sh /app/
 

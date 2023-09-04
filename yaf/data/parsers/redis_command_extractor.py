@@ -12,7 +12,7 @@ def extract_key(text):
     return single_regex_find_non_none(
         text=text,
         regex=r'KEY: (.+)',
-        not_found_msg='Отсутствует KEY!')
+        not_found_msg='Missing KEY!')
 
 
 def extract_expired(text):

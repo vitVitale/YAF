@@ -12,7 +12,7 @@ services:
     networks:
       - ST_network
     volumes:
-      - ./compliance/:/app/
+      - ./example/:/app/
     environment:
       TZ: Europe/Moscow
       REST_PORT: 8022

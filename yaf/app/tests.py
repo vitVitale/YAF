@@ -12,7 +12,7 @@ def include_custom_context():
     try:
         clazz = import_module(CUSTOM_CTX).CustomContext
         assert issubclass(clazz, BaseContext), \
-            f'Класс [{CUSTOM_CTX}] не является наследуемым от [steps.context.BaseContext]'
+            f'Class [{CUSTOM_CTX}] does not inherit from [steps.context.BaseContext]'
         # TODO:: add sys path to extension dir
         return clazz
     except:
@@ -45,7 +45,7 @@ def executor(steps):
                     exec_step_instruction(step, invoker, args)
                     break
             if not invoke_flag:
-                raise Exception(f'Метод [{step["command"]}] не существует!')
+                raise Exception(f'Method [{step["command"]}] does not exist!')
 
 
 ########################################################################################################################

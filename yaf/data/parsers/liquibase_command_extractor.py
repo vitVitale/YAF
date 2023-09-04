@@ -12,15 +12,15 @@ def extract_changelog(text):
     return single_regex_find_non_none(
         text=text,
         regex=r'CHANGELOG: (.+)',
-        not_found_msg='Не указан changelog master файл !')
+        not_found_msg='Changelog master file not specified !')
 
 
 def extract_task(text):
     return single_regex_find_non_none(
         text=text,
         regex=r'TASK: (.+)',
-        not_found_msg='Не указана операция !\n'
-                      'Примеры: [update, dropAll]')
+        not_found_msg='Operation not specified !\n'
+                      'For example: [update, dropAll]')
 
 
 def extract_schema(text):

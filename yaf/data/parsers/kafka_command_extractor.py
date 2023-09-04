@@ -54,5 +54,5 @@ def extract_message(text):
     try:
         return re.findall(r'MESSAGE: (.+)', text, re.DOTALL).pop()
     except IndexError as e:
-        print('Отсутствует тело для отправки!')
+        print('No body to send!')
         return None

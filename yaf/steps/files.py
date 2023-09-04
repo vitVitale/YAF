@@ -17,7 +17,7 @@ class DocType(Enum):
 class FilesSteps(Base):
 
     @staticmethod
-    @allure.step('Редактировать YAML файл')
+    @allure.step('Edit YAML file')
     def edit_yml_file(file_name, paths, new_values):
         FilesSteps._edit_file(doctype=DocType.YAML,
                               file_name=file_name,
@@ -25,7 +25,7 @@ class FilesSteps(Base):
                               paths=paths)
 
     @staticmethod
-    @allure.step('Редактировать JSON файл')
+    @allure.step('Edit JSON file')
     def edit_json_file(file_name, paths, new_values):
         FilesSteps._edit_file(doctype=DocType.JSON,
                               file_name=file_name,
@@ -41,7 +41,7 @@ class FilesSteps(Base):
 
     @staticmethod
     def _edit_file(doctype: DocType, file_name: str, paths: list, values: list):
-        assert len(paths) == len(values), 'Разная размерность данных !'
+        assert len(paths) == len(values), 'Different data dimensions!'
         doc: dict = FilesSteps._read_file(file_name, doctype.name, doctype.value)
         FilesSteps._apply_changes(doc, paths, values)
         FilesSteps._write_file(doc, file_name, doctype.name, doctype.value)
@@ -58,9 +58,9 @@ class FilesSteps(Base):
                 elif 'YAML' == types:
                     result_map = yaml.safe_load(text)
                 else:
-                    raise Exception(f'Тип [{types}] файла не поддерживается!')
+                    raise Exception(f'File type [{types}] is not supported!')
             except Exception as exc:
-                raise Exception(f'Не удалось распарсить файл\n{exc}')
+                raise Exception(f'Failed to parse file\n{exc}')
             return result_map if result_map else {}
 
     @staticmethod
@@ -93,6 +93,6 @@ class FilesSteps(Base):
                 refreshed = yaml.safe_dump(obj_dict, default_flow_style=False,
                                            allow_unicode=True, sort_keys=False)
             else:
-                raise Exception(f'Тип [{types}] файла не поддерживается!')
+                raise Exception(f'File type [{types}] is not supported!')
             f.write(refreshed)
         allure.attach(refreshed, 'updated file - \n', attach_type)

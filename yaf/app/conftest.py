@@ -142,7 +142,7 @@ def _prepare_sql_clients(is_start: bool):
 
 def attach_container_log(containers: List[str], start_time: datetime):
     if len(containers) > 0:
-        with allure.step('Логи указанных Docker контейнеров'):
+        with allure.step('Logs of specified Docker containers'):
             log_time = (start_time + timedelta(hours=3)).strftime('%H:%M:%S. %f')
             docker_cl = docker.from_env()
             for container in containers:

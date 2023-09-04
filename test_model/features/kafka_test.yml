@@ -1,28 +1,28 @@
 ---
-epic: Питонячий СТ фреймворк
-feature: Проверки кафки
+epic: Python ST framework
+feature: Kafka checks
 
 setup:
   only:
     - tags: ['beta_v3', 'delta_v2']
       before:
-        - command: Выполнить Bash скрипт
+        - command: Execute Bash script
           params:
             text: 'echo "only before (beta_v3 or delta_v2)"'
             expected: 'NO SAVE'
       after:
-        - command: Выполнить Bash скрипт
+        - command: Execute Bash script
           params:
             text: 'echo "only after (beta_v3 or delta_v2)"'
             expected: 'NO SAVE'
     - tags: ['omega', 'gamma']
       before:
-        - command: Выполнить Bash скрипт
+        - command: Execute Bash script
           params:
             text: 'echo "only before (omega or gamma)"'
             expected: 'NO SAVE'
       after:
-        - command: Выполнить Bash скрипт
+        - command: Execute Bash script
           params:
             text: 'echo "only after (omega or gamma)"'
             expected: 'NO SAVE'
@@ -53,7 +53,7 @@ tests:
       - { id: '1980', provider: 'mash' }
       - { id: '2048', provider: 'farolex' }
     steps:
-      - command: Отправить расширенный запрос в Kafka-Kafka_test
+      - command: Send extended message to Kafka-Kafka_test
         params:
           text: |-
             PARTITION: 0
@@ -73,17 +73,17 @@ tests:
                 }
               }
             }
-      - command: Получить запрос с таймаутом из Kafka-Kafka_test
+      - command: Find message with timeout from Kafka-Kafka_test
         params:
           text: |-
             {{ JPATH : RQ_1 : $.messageId : str(this) }}
           expected: 30
-      - command: Проверяем значение поля ответа
+      - command: Check value of response field
         params:
           text: |-
             JPATH : RS_1 : $.payload.providerId
           expected: '{{ provider }}'
-      - command: Отправить запрос в Kafka-Kafka_test
+      - command: Send message to Kafka-Kafka_test
         params:
           text: |-
             {
@@ -93,12 +93,12 @@ tests:
                 "category": {{ REGEX {{ JPATH : RQ_1 : $.messageId }}[0-9]{3} }}{{ REGEX [1-9]{1} }}
               }
             }
-      - command: Получить запрос из Kafka-Kafka_test
+      - command: Find message from Kafka-Kafka_test
         params:
           text: |-
             {{ JPATH : RQ_2 : $.messageId : str(this) }}
-#      - command: Проверяем значение/wrong поля ответа
-      - command: Проверяем значение поля ответа
+#      - command: Check value/wrong of response field
+      - command: Check value of response field
         params:
           text: |-
             JPATH : RS_1 : $.messageId
@@ -110,7 +110,7 @@ tests:
     tags: ['beta_v3', 'alpha_v1.1']
     flaky: 1
     steps:
-      - command: Отправить запрос в Kafka-Kafka_test
+      - command: Send message to Kafka-Kafka_test
         params:
           text: |-
             {
@@ -119,16 +119,16 @@ tests:
                 "category": "WEATHER"
               }
             }
-      - command: Получить запрос из Kafka-Kafka_test
+      - command: Find message from Kafka-Kafka_test
         params:
           text: |-
             {{ JPATH : RQ_1 : $.messageId }}
-      - command: Проверяем значение поля ответа
+      - command: Check value of response field
         params:
           text: |-
             JPATH : RS_1 : $.messageId
           expected: 'REGEX \d{6}'
-      - command: Проверяем схемой ответ-RS_1
+      - command: Validate response with JSON schema-RS_1
         params:
           text: |-
             {{ GET_FILE schema.json }}
@@ -138,34 +138,34 @@ tests:
   - name: Test with resource file
     tags: ['alpha_v1.1', 'delta_v2']
     test_data:
-      - { query: 'Какая погода ?', channel: 'B2C' }
-      - { query: 'Расскажи новости', channel: 'B2E' }
-      - { query: 'Как дела ?', channel: 'B2D' }
+      - { query: 'What is the weather ?', channel: 'B2C' }
+      - { query: 'Tell the news', channel: 'B2E' }
+      - { query: 'How are you ?', channel: 'B2D' }
     steps:
-      - command: Отправить запрос в Kafka-Kafka_test
+      - command: Send message to Kafka-Kafka_test
         params:
           text: |-
             {{ GET_FILE some_request.json }}
-      - command: Получить запрос из Kafka-Kafka_test
+      - command: Find message from Kafka-Kafka_test
         params:
           text: |-
             {{ JPATH : RQ_1 : $.messageId }}
-      - command: Проверка наличия/отсутствия элемента в ответе
+      - command: Check presence/absence of element in response
         params:
           text: |-
             JPATH : RS_1 : $.payload.device.channel
           expected: true
-      - command: Проверяем значение поля ответа
+      - command: Check value of response field
         params:
           text: |-
             JPATH : RS_1 : $.payload.device.channel
           expected: '{{ channel }}'
-      - command: Проверяем значение поля ответа
+      - command: Check value of response field
         params:
           text: |-
             JPATH : RS_1 : $.payload.device.capabilities
           expected: {"screen": {"available": true},"speak": {"available": true},"misc": {"available": true}}
-      - command: Проверяем несколько полей ответа
+      - command: Check multiple response fields
         params:
           text:
             - 'JPATH : RS_1 : $.payload.device.capabilities.screen.available'

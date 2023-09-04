@@ -1,13 +1,25 @@
 ---
-epic: Питонячий СТ фреймворк
-feature: Проверки GRPC (Protobuf) взаимодействия
+epic: Python ST framework
+feature: GRPC (Protobuf) interaction checks
+
+commons: &airflow-common-env
+  AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+  AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+  AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+  AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:airflow@postgres/airflow
+  AIRFLOW__CELERY__BROKER_URL: redis://:@redis:6379/0
+  AIRFLOW__CORE__FERNET_KEY: ''
+
 
 tests:
-  - name: Тест gRPC заглушки
+  - name: Test of gRPC stub
+    <<: *airflow-common-env
+#    ttype: *airflow-common-env
+    AIRFLOW__CORE__EXECUTOR: OverridedExecutor
     test_data:
       - { service: 'ExampleService', rpc: 'GetUserById' }
     steps:
-      - command: Отправить запрос REST-stubAPI
+      - command: Send request REST-stubAPI
         params:
           text: |-
             curl -X POST 'http://localhost:8022/define_stub?service={{ service }}&rpc={{ rpc }}' \
@@ -34,7 +46,7 @@ tests:
               }
             }'
           expected: 'HTTP CODE: 200'
-      - command: Отправить json запрос GRPC-grpcAPI
+      - command: Send json request GRPC-grpcAPI
         params:
           text: |-
             SERVICE: {{ service }}
@@ -43,18 +55,18 @@ tests:
               {
                 "id": 18283
               }
-      - command: Проверяем значение поля ответа
+      - command: Check value of response field
         params:
           text: |-
             JPATH : RS_2 : $.status
           expected: "OK"
-      - command: Проверка наличия/отсутствия нескольких элементов в ответе
+      - command: Check presence/absence of multiple elements in response
         params:
           text:
             - { target: 'JPATH : RS_2 : $.user.subscriptionData[0].expiresAt.data', expected: false }
             - { target: 'JPATH : RS_2 : $.user.phone',                               expected: true }
             - { target: 'JPATH : RS_2 : $.error',                                   expected: false }
-      - command: Проверяем несколько полей ответа
+      - command: Check multiple response fields
         params:
           text:
             - 'JPATH : RS_2 : $.user.name'

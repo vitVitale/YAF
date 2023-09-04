@@ -1,11 +1,11 @@
 ---
-epic: Питонячий СТ фреймворк
-feature: Проверки MongoDB
+epic: Python ST framework
+feature: MongoDB checks
 
 tests:
   - name: Test with Mongo DB (CRUD ops)
     steps:
-      - command: Записать объект(ы) в MongoDB-mongoTest
+      - command: Insert objects into MongoDB-mongoTest
         params:
           text: |-
             DATABASE: test_db
@@ -13,7 +13,7 @@ tests:
             VALUE: [{ "Name": "olaf", "Address": "Sears , NZ", "Age": 10000 },
                     { "Name": "Tommy", "Address": "Laguna Bay", "Age": 2000 },
                     { "Name": "Vitte", "Address": "Sears Streer, NZ", "Age": {{ REGEX [1-9][0-9]{4} }}}]
-      - command: Поиск объектов в MongoDB-mongoTest
+      - command: Find objects in MongoDB-mongoTest
         params:
           text: |-
             DATABASE: test_db
@@ -21,7 +21,7 @@ tests:
             SORT: Age(DESC)
             FILTER: {"Name": {"$regex": "^V"}}
           expected: 'NOT EMPTY'
-      - command: Поиск объектов в MongoDB-mongoTest
+      - command: Find objects in MongoDB-mongoTest
         params:
           text: |-
             DATABASE: test_db
@@ -29,14 +29,14 @@ tests:
             FIELDS: !_id,Age,Name
             FILTER: {"Name": {"$regex": "^ol"}}
           expected: 'NOT EMPTY'
-      - command: Поиск объектов в MongoDB-mongoTest
+      - command: Find objects in MongoDB-mongoTest
         params:
           text: |-
             DATABASE: test_db
             COLLECTION: employee
             FILTER: {"Name": {"$regex": "^Y"}}
           expected: 'EMPTY'
-      - command: Обновить объект(ы) в MongoDB-mongoTest
+      - command: Update objects in MongoDB-mongoTest
         params:
           text: |-
             DATABASE: test_db
@@ -45,14 +45,14 @@ tests:
             VALUE: {"$set": {"Age": {{ REGEX [1-9][0-9]{3} }}}}
           expected: 'ONLY WITH CHANGES'
 #          expected: 'NO CHANGES ALLOWED'
-      - command: Поиск объектов в MongoDB-mongoTest
+      - command: Find objects in MongoDB-mongoTest
         params:
           text: |-
             DATABASE: test_db
             COLLECTION: employee
             FIELDS: !_id,Age,Name
           expected: 'NOT EMPTY'
-      - command: Удалить объект(ы) в MongoDB-mongoTest
+      - command: Remove objects in MongoDB-mongoTest
         params:
           text: |-
             DATABASE: test_db
@@ -60,14 +60,14 @@ tests:
             FILTER: {"Name": {"$regex": "^T"}}
 #          expected: 'ONLY WITH CHANGES'
           expected: 'NO CHANGES ALLOWED'
-      - command: Поиск объектов в MongoDB-mongoTest
+      - command: Find objects in MongoDB-mongoTest
         params:
           text: |-
             DATABASE: test_db
             COLLECTION: employee
             FIELDS: !_id,Age,Name
           expected: 'NOT EMPTY'
-      - command: Проверяем значение поля ответа
+      - command: Check value of response field
         params:
           text: |-
             JPATH : RS_2 : $.[0].Age : str(this)

@@ -79,7 +79,7 @@ class WSocketCl:
 
     def send(self, message: str, timeout: int = 5):
         print('send message >>')
-        err_msg = f'Не удалось отправить событие за {timeout} сек.\n'
+        err_msg = f'Failed to send event for {timeout} sec.\n'
         while timeout > 0:
             try:
                 self.ws.send(data=message)
@@ -99,8 +99,8 @@ class WSocketCl:
                 t -= 1
                 if cur_size != len(self.events) and len(self.events) > 2:
                     return self.events[-1]
-            raise Exception(f'Новое событие не полученно за время {timeout} сек.')
+            raise Exception(f'New event not received within {timeout} sec.')
         elif len(self.events) == 0:
-            raise Exception('Отсутствуют любые события !!')
+            raise Exception('Missing any events!!')
         else:
             return self.events[-1]

@@ -14,7 +14,7 @@ def extract_scheme(text):
     return single_regex_find_non_none(
         text=text,
         regex=r'SCHEME: (.+)',
-        not_found_msg='Отсутствует SCHEME!')
+        not_found_msg='Missing SCHEME!')
 
 
 def extract_key(text):

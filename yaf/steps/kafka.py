@@ -10,16 +10,16 @@ from yaf.data.parsers.kafka_command_extractor import parse
 class KafkaSteps(Base):
 
     @staticmethod
-    @allure.step('Отправить запрос в Kafka')
+    @allure.step('Send message to Kafka')
     def send_message_to_kafka(client_name, payload):
         payload = KafkaSteps.perform_replacement_and_return(payload)
         client = KafkaSteps.connections.get_client(client_name)
         client.send_message(message=payload)
-        allure.attach(payload, 'Json отправленный в Kafka -', allure.attachment_type.JSON)
+        allure.attach(payload, 'Json sent to Kafka -', allure.attachment_type.JSON)
         KafkaSteps.put_request_to_stash(payload)
 
     @staticmethod
-    @allure.step('Отправить расширенный запрос в Kafka')
+    @allure.step('Send extended message to Kafka')
     def send_extended_msg_to_kafka(client_name, text):
         client = KafkaSteps.connections.get_client(client_name)
         parsed_dict = parse(KafkaSteps.perform_replacement_and_return(text))
@@ -31,7 +31,7 @@ class KafkaSteps(Base):
                     f"TOPIC:       {parsed_dict['topic']}\n" \
                     f"KEY:         {parsed_dict['key']}" \
                     f"{header_tb}"
-        allure.attach(additions, 'Дополнения - \n', allure.attachment_type.TEXT)
+        allure.attach(additions, 'Additions - \n', allure.attachment_type.TEXT)
         msg = avro_serializer(parsed_dict['message'], parsed_dict['avro_schema']) \
             if parsed_dict['avro_schema'] \
             else parsed_dict['message']
@@ -40,50 +40,50 @@ class KafkaSteps(Base):
                             topic=parsed_dict['topic'],
                             key=parsed_dict['key'],
                             message=msg)
-        info_mess = 'Payload отправленный в Kafka - \n'
+        info_mess = 'Payload sent to Kafka - \n'
         KafkaSteps.attach_request_block(body=parsed_dict['message'],
                                         info_mess=info_mess,
                                         save=True)
         if parsed_dict['avro_schema'] is not None:
-            info_mess = 'Avro сериализованное сообщение - \n'
+            info_mess = 'The Avro serialized message - \n'
             KafkaSteps.attach_request_block(body=str(msg),
                                             info_mess=info_mess,
                                             save=False)
 
     @staticmethod
-    @allure.step('Отправить массив байт в Kafka')
+    @allure.step('Send byte array to Kafka')
     def send_byte_arr_to_kafka(client_name, text):
         client = KafkaSteps.connections.get_client(client_name)
         topic = safe_load(text)['TOPIC']
         message = safe_load(text)['MESSAGE']
         byte_arr = bytes(message, 'UTF-8')
         client.send_message(topic=topic, message=byte_arr)
-        allure.attach(message, 'Сообщение отправленное в Kafka -', allure.attachment_type.TEXT)
+        allure.attach(message, 'Message sent to Kafka -', allure.attachment_type.TEXT)
         KafkaSteps.put_request_to_stash(message)
 
     @staticmethod
-    @allure.step('Получить последнюю запись из Kafka')
+    @allure.step('Get the last record from Kafka')
     def get_last_message_kafka(client_name, text):
         client = KafkaSteps.connections.get_client(client_name)
         parsed_dict = parse(KafkaSteps.perform_replacement_and_return(text))
         additions = f"PARTITION:   {parsed_dict['partition']}\n" \
                     f"TOPIC:       {parsed_dict['topic']}\n"
-        allure.attach(additions, 'Условия - \n', allure.attachment_type.TEXT)
+        allure.attach(additions, 'Conditions - \n', allure.attachment_type.TEXT)
         record = client.get_last_message_from(partition=parsed_dict['partition'],
                                               topic=parsed_dict['topic'])
-        allure.attach(record.value, 'RAW-Payload полученный из Kafka -', allure.attachment_type.TEXT)
+        allure.attach(record.value, 'RAW-Payload received from Kafka -', allure.attachment_type.TEXT)
         KafkaSteps.put_response_to_stash(body=record)
         KafkaSteps.attach_additions(record)
 
     @staticmethod
-    @allure.step('Получить запрос с таймаутом из Kafka')
+    @allure.step('Find message with timeout from Kafka')
     def find_msg_with_timeout_kafka(client_name, text, timeout):
         KafkaSteps.find_msg_kafka(client_name=client_name,
                                   timeout=timeout,
                                   text=text)
 
     @staticmethod
-    @allure.step('Получить запрос из Kafka')
+    @allure.step('Find message from Kafka')
     def find_message_kafka(client_name, text):
         KafkaSteps.find_msg_kafka(client_name=client_name,
                                   text=text)
@@ -98,7 +98,7 @@ class KafkaSteps(Base):
         record = client.find_message_by_mark(marker=parsed_dict['marker'] if parsed_dict['marker'] else str(text),
                                              time=int(timeout) if timeout else 5,
                                              avsc=parsed_dict['avro_schema'])
-        KafkaSteps.attach_response_block(info_mess='Payload полученный из Kafka -', body=record.value)
+        KafkaSteps.attach_response_block(info_mess='Payload received from Kafka -', body=record.value)
         KafkaSteps.attach_additions(record)
 
     @staticmethod
@@ -113,4 +113,4 @@ class KafkaSteps(Base):
                                                headers=['Name', 'Value'],
                                                tablefmt='grid')
             KafkaSteps.stash[f'HEADERS_RS_{Base.rsCounter}'] = headers_map
-        allure.attach(msg, 'Дополнения - \n', allure.attachment_type.TEXT)
+        allure.attach(msg, 'Additions - \n', allure.attachment_type.TEXT)

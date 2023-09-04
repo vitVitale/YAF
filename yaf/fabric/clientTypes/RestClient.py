@@ -49,6 +49,6 @@ class RestCl:
             sleep(0.1)
             counter += 1
             if counter > (timeout * 10):
-                raise Exception(f'Не удалось получить ответ с тамаутом {timeout} сек !!')
+                raise Exception(f'Failed to get response with timeout {timeout} sec !!')
 
         return future.result()

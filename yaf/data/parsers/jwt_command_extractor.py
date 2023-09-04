@@ -27,4 +27,4 @@ def extract_data(text):
     try:
         return loads(re.findall(r'DATA: (.+)', text, re.DOTALL).pop())
     except Exception as e:
-        raise Exception('Не удалось извлечь и распарсить данные!')
+        raise Exception('Failed to extract and parse data!')

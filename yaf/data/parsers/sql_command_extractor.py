@@ -20,7 +20,7 @@ def extract_column(text):
     return single_regex_find_non_none(
         text=text,
         regex=r'COLUMN: (\S+)',
-        not_found_msg='Отсутствует COLUMN!')
+        not_found_msg='Missing COLUMN!')
 
 
 def extract_transform_expr(text):

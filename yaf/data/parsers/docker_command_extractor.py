@@ -13,14 +13,14 @@ def extract_compose_file(text):
     return single_regex_find_non_none(
         text=text,
         regex=r'COMPOSE: (.+)',
-        not_found_msg='Не указан docker-compose файл!')
+        not_found_msg='docker-compose file not specified!')
 
 
 def extract_type(text):
     return single_regex_find_non_none(
         text=text,
         regex=r'TYPE: (?i)(UP|DOWN|RESTART)',
-        not_found_msg='Не задана операция!')
+        not_found_msg='Operation not set!')
 
 
 def extract_wait_for(text):

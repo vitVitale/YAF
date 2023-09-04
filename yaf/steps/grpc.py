@@ -9,7 +9,7 @@ from google.protobuf.text_format import MessageToString
 class GrpcSteps(Base):
 
     @staticmethod
-    @allure.step('Отправить GRPC запрос')
+    @allure.step('Send GRPC request')
     def send_grpc_request(client_name, payload):
         payload = GrpcSteps.render_and_attach(payload)
         elements: dict = safe_load(payload)
@@ -23,19 +23,19 @@ class GrpcSteps(Base):
                                     message=msg_type,
                                     args=elements[msg_type])
         if isinstance(response, Exception):
-            err_mess = 'Ошибка полученная по PROTOBUF протоколу - \n'
+            err_mess = 'Error received by PROTOBUF protocol - \n'
             allure.attach(str(response), err_mess, allure.attachment_type.TEXT)
         elif response is not None:
-            info_mess = 'Объект полученный по PROTOBUF протоколу - \n'
+            info_mess = 'Object received via PROTOBUF protocol - \n'
             resp_str = MessageToString(response, as_utf8=True)
             allure.attach(resp_str, info_mess, allure.attachment_type.TEXT)
         else:
-            info_mess = 'Отсутствует ответ по PROTOBUF протоколу либо равен None - \n'
+            info_mess = 'No response by PROTOBUF protocol or None - \n'
             allure.attach('None', info_mess, allure.attachment_type.TEXT)
         GrpcSteps.put_response_to_stash(response)
 
     @staticmethod
-    @allure.step('Отправить GRPC запрос в виде json')
+    @allure.step('Send GRPC request like json')
     def send_json_like_grpc_request(client_name, payload):
         payload = GrpcSteps.perform_replacement_and_return(payload)
         elements: dict = safe_load(payload)
@@ -46,8 +46,8 @@ class GrpcSteps(Base):
                                              ('RPC', rpc_name),
                                              ('TYPE', msg_type)],
                                tablefmt='fancy_grid'),
-                      'Детали запроса -', allure.attachment_type.TEXT)
-        GrpcSteps.attach_request_block(info_mess='Тело запроса -', save=True,
+                      'Request\'s details -', allure.attachment_type.TEXT)
+        GrpcSteps.attach_request_block(info_mess='Request\'s body -', save=True,
                                        body=elements[msg_type])
         client = GrpcSteps.connections.get_client(client_name)
         response = client.json_performer(service=serv_name,
@@ -57,17 +57,17 @@ class GrpcSteps(Base):
         if isinstance(response, Exception):
             GrpcSteps.transform_grpc_error(response)
         elif response is None:
-            info_mess = 'Отсутствует ответ по PROTOBUF протоколу либо равен None - \n'
+            info_mess = 'No response by PROTOBUF protocol or None - \n'
             allure.attach('None', info_mess, allure.attachment_type.TEXT)
         else:
-            GrpcSteps.attach_response_block(info_mess='Объект полученный по PROTOBUF протоколу - \n',
+            GrpcSteps.attach_response_block(info_mess='Object received via PROTOBUF protocol - \n',
                                             body=response)
 
 ########################################################################################################################
 
     @staticmethod
     def transform_grpc_error(error: Exception):
-        err_mess = f'Получена ошибка {str(type(error))} - \n'
+        err_mess = f'Error received {str(type(error))} - \n'
         err_json_str = json.dumps({
             'status': str(error.args[0].code),
             'details': error.args[0].details,

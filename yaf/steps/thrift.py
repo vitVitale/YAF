@@ -6,7 +6,7 @@ from yaf.data.parsers.thrift_command_extractor import parse
 class ThriftSteps(Base):
 
     @staticmethod
-    @allure.step('Отправить THRIFT запрос')
+    @allure.step('Send THRIFT request')
     def send_thrift_request(client_name, payload):
         payload = ThriftSteps.render_and_attach(payload)
         elements = parse(payload)
@@ -17,7 +17,7 @@ class ThriftSteps(Base):
                                     method=elements['method'],
                                     args=elements['args'])
         if response is not None:
-            info_mess = 'Объект полученный по Thrift протоколу - \n'
+            info_mess = 'Object received via Thrift protocol - \n'
             ThriftSteps.attach_response_block(body=str(response), info_mess=info_mess)
         else:
             ThriftSteps.put_response_to_stash(response)

@@ -14,7 +14,7 @@ from yaf.steps.files import FilesSteps
 class CommonSteps(Base):
 
     @staticmethod
-    @allure.step('Выполнить Bash скрипт')
+    @allure.step('Execute Bash script')
     def execute_shell(text, expected):
         text = CommonSteps.render_and_attach(text)
         result = subprocess.run(text, cwd='../',
@@ -23,13 +23,13 @@ class CommonSteps(Base):
         result = f'STDOUT:\n{result.stdout.decode("utf-8")}\n' \
                  f'STDERR:\n{result.stderr.decode("utf-8")}'
         save_flag = 'SAVE' == expected.upper()
-        info_mess = 'Полученный консольный лог - \n'
+        info_mess = 'Received console log - \n'
         CommonSteps.attach_request_block(info_mess=info_mess,
                                          save=save_flag,
                                          body=result)
 
     @staticmethod
-    @allure.step('Выполнить Liquibase Task для БД')
+    @allure.step('Execute Liquibase Task for DataBase')
     def execute_liquibase_task(client_name, text):
         client = CommonSteps.connections.get_client(client_name)
         parsed_dict = parse(CommonSteps.render_and_attach(text))
@@ -47,12 +47,12 @@ class CommonSteps(Base):
         result = subprocess.run(request, cwd=f'{PATH_COMPENSATOR}migrations_tools',
                                 capture_output=True,
                                 check=True, shell=True).stderr.decode("utf-8")
-        CommonSteps.attach_request_block(info_mess='Liquibase лог - \n',
+        CommonSteps.attach_request_block(info_mess='Liquibase log - \n',
                                          body=result,
                                          save=False)
 
     @staticmethod
-    @allure.step('Выполнить команды по SSH')
+    @allure.step('Execute commands via SSH')
     def execute_remote_cmd(client_name, text, expected=None):
         client = CommonSteps.connections.get_client(client_name)
         text = CommonSteps.render_and_attach(text)
@@ -62,22 +62,22 @@ class CommonSteps(Base):
 
             if expected.startswith(REGEX_MARK):
                 expected = expected.replace(REGEX_MARK, EMPTY)
-                assert re.match(f'{expected}', result), f'Значения в поле <{result}> не соответсвует' \
-                                                        f' регулярному выражению!!\n' \
+                assert re.match(f'{expected}', result), f'The value in the field <{result}> does not match' \
+                                                        f' the regular expression!!\n' \
                                                         f'   regex: {expected} \n' \
                                                         f'  actual: {result}'
             else:
 
-                assert result == expected, f'Значения result не равно ожидаемому !!\n' \
+                assert result == expected, f'result is not equal to expected !!\n' \
                                            f'expected: {expected} \n' \
                                            f'  actual: {result}'
 
-        info_mess = 'Полученный консольный лог - \n'
+        info_mess = 'Received console log - \n'
         allure.attach(result, info_mess, allure.attachment_type.TEXT)
         CommonSteps.put_response_to_stash(result)
 
     @staticmethod
-    @allure.step('Скачать файл по SFTP')
+    @allure.step('Download file via SFTP')
     def download_file_by_sftp(client_name, remote_filepath):
         client = CommonSteps.connections.get_client(client_name)
         remote_filepath = CommonSteps.render_and_attach(remote_filepath)
@@ -86,17 +86,17 @@ class CommonSteps(Base):
         if os.path.isfile(path):
             with open(path, 'r', encoding='utf-8') as file:
                 path = file.read()
-        info_mess = 'Полученный файл - \n'
+        info_mess = 'Received file - \n'
         CommonSteps.attach_response_block(info_mess=info_mess,
                                           body=path)
 
     @staticmethod
-    @allure.step('Явное ожидание в миллисекундах')
+    @allure.step('Explicit wait in milliseconds')
     def delay_wait_in_mills(text):
         sleep(float(text)/1000)
 
     @staticmethod
-    @allure.step('Сохранить значение в переменную')
+    @allure.step('Save value to variable')
     def save_to_test_scope_var(text, var_name):
         var = CommonSteps.render_and_attach(text)
         if not isinstance(var_name, dict):
@@ -111,13 +111,13 @@ class CommonSteps(Base):
                                  new_values=[var])
 
     @staticmethod
-    @allure.step('Сгенерировать JWT token')
+    @allure.step('Generate JWT token')
     def generate_json_web_token(text, var_name):
         parsed_dict = jwt_parse(CommonSteps.render_and_attach(text))
         token = jwt.encode(algorithm=parsed_dict['algorithm'],
                            payload=parsed_dict['data'],
                            key=parsed_dict['key'])
-        info_mess = 'Полученный токен - \n'
+        info_mess = 'Received token - \n'
         allure.attach(token, info_mess, allure.attachment_type.TEXT)
         CommonSteps.stash[f'env.{var_name}'] = token
 

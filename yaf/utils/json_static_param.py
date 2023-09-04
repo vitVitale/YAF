@@ -22,10 +22,10 @@ def get_value_from_object_of_stash(query, stash):
                                                 this=answer)
                 query = answer
             except KeyError:
-                raise Exception(f'Отсутствует документ по маркеру [ {str_mass[1]} ] !')
+                raise Exception(f'Missing document according marker [ {str_mass[1]} ] !')
             except IndexError:
-                raise AssertionError(f'Значения для jsonPath: [ {str_mass[2]} ] \n'
-                                     f'не найдены в документе [ {str_mass[1]} ] !')
+                raise AssertionError(f'Values for jsonPath:  [ {str_mass[2]} ] \n'
+                                     f'not found in document [ {str_mass[1]} ] !')
     return query
 
 
@@ -36,7 +36,7 @@ def get_header_value(query, stash):
         try:
             query = stash[mark][key]
         except KeyError:
-            raise Exception(f'Отсутсвует заголовок [ {key} ] !')
+            raise Exception(f'Missing header [ {key} ] !')
     return query
 
 
@@ -53,7 +53,7 @@ def get_from_test_data(key: str, stash):
     try:
         return stash[TEST_DATA][key]
     except KeyError as e:
-        raise Exception(f'В test_data отсутсвует значение для шаблона {key} !!')
+        raise Exception(f'test_data missing value for template {key} !!')
 
 
 def is_payload_json(json_candidate):

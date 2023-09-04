@@ -33,8 +33,8 @@ def get_object_from_stash(query, stash):
                 joiner = '.' if not isinstance(struct, tuple([list, dict])) else EMPTY
                 return eval(f'struct{joiner}{str_mass[2]}')
             except AttributeError:
-                raise AssertionError(f'Не верный путь: [ {str_mass[2]} ] \n'
-                                     f'для структуры [ {str_mass[1]} ] !')
+                raise AssertionError(f'Wrong way:    [ {str_mass[2]} ] \n'
+                                     f'for structure [ {str_mass[1]} ] !')
     return query
 
 
@@ -52,20 +52,20 @@ def get_variable_from_stash(query, stash):
 def get_variable_from_env_file(query):
     if isinstance(query, str) and query.startswith('env_file.'):
         query_parts = query.split(' : ')
-        assert isfile(ENV_FILE), f"Значение переменной [{query_parts[0]}] не найдено " \
-                                 f"т.к. отсутствует __env_file__.yml !"
+        assert isfile(ENV_FILE), f"The value of the variable [{query_parts[0]}] was not found " \
+                                 f"because missing __env_file__.yml !"
         with open(ENV_FILE, "r", encoding='utf-8') as stream:
             try:
                 envs_map: dict = yaml.safe_load(stream)
                 var_name_in_file = query_parts[0].replace('env_file.', EMPTY)
                 answer = envs_map.get(var_name_in_file)
-                assert answer, f"Переменная {var_name_in_file} отсутствует в ENV_FILE!"
+                assert answer, f"Variable {var_name_in_file} is missing from ENV_FILE!"
                 if len(query_parts) == 2:
                     answer = evaluate_injection(expression=query_parts[1],
                                                 this=answer)
                 return answer
             except yaml.YAMLError as exc:
-                raise Exception(f'Не удалось распарсить файл {ENV_FILE} \n{exc.__cause__}')
+                raise Exception(f'Failed to parse file {ENV_FILE} \n{exc.__cause__}')
             except AssertionError as aex:
                 raise Exception(aex)
     return query

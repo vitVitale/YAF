@@ -1,17 +1,17 @@
 ---
-epic: Питонячий СТ фреймворк
-feature: Проверки POSTGRESQL
+epic: Python ST framework
+feature: POSTGRESQL checks
 
 setup:
   each:
     before:
-      - command: Выполнить запрос на изменение в БД-localDB
+      - command: Execute changing request in DB-localDB
         params:
           text: |-
             SET search_path TO data_pipe_cache;
           expected: 'NO CHANGES ALLOWED'
     after:
-      - command: Выполнить запрос на изменение в БД-localDB
+      - command: Execute changing request in DB-localDB
         params:
           text: |-
             DELETE FROM person
@@ -29,33 +29,33 @@ tests:
       - { first_name: 'Serega', last_name: 'Lusanov', like_name: 'san' }
       - { first_name: 'Olga', last_name: 'Timchenko', like_name: 'chen' }
     steps:
-      - command: Выполнить поисковый запрос в БД-localDB
+      - command: Execute searching request in DB-localDB
         params:
           text: |-
             SELECT * FROM person
           expected: 'NOT EMPTY'
-      - command: Выполнить запрос на изменение в БД-localDB
+      - command: Execute changing request in DB-localDB
         params:
           text: |-
             INSERT INTO person ("id","firstname","lastname","state","username")
             values ({{ REGEX [1-9][0-9] }},'{{ first_name }}','{{ last_name }}','Y',NULL)
           expected: 'ONLY WITH CHANGES'
-      - command: Выполнить поисковый запрос в БД-localDB
+      - command: Execute searching request in DB-localDB
         params:
           text: |-
             SELECT firstname, lastname FROM person WHERE username IS NULL
           expected: 'NOT EMPTY'
-      - command: Выполнить запрос на изменение в БД-localDB
+      - command: Execute changing request in DB-localDB
         params:
           text: |-
             UPDATE person SET lastname = 'Beliy' WHERE id NOT IN (1, 2, 3)
           expected: 'ONLY WITH CHANGES'
-      - command: Выполнить поисковый запрос в БД-localDB
+      - command: Execute searching request in DB-localDB
         params:
           text: |-
             SELECT * FROM person WHERE lastname LIKE '%{{ like_name }}%'
           expected: 'EMPTY'
-      - command: Выполнить поисковый запрос в БД-localDB
+      - command: Execute searching request in DB-localDB
         params:
           text: |-
             SELECT * FROM person
@@ -66,34 +66,34 @@ tests:
   - name: Test with Postgres DB (templates and checks)
     flaky: 3
     steps:
-      - command: Выполнить поисковый запрос в БД-localDB
+      - command: Execute searching request in DB-localDB
         params:
           text: |-
             SELECT * FROM person
           expected: 'NOT EMPTY'
-      - command: Проверяем значения SQL ответа-SQL_RS_1
+      - command: Check SQL response values-SQL_RS_1
         params:
           text: |-
             ROW: ALL
             COLUMN: firstname
           expected: 'REGEX (Gregor|Elena|Vitaly)'
-      - command: Выполнить поисковый запрос в БД-localDB
+      - command: Execute searching request in DB-localDB
         params:
           text: |-
             SELECT * FROM person WHERE lastname = '{{ SQL_RS_1 ROW: 3 COLUMN: lastname }}'
           expected: 'NOT EMPTY'
-      - command: Выполнить поисковый запрос в БД-localDB
+      - command: Execute searching request in DB-localDB
         params:
           text: |-
             SELECT * FROM person WHERE firstname IN ({{ SQL_RS_1 ROW: ALL COLUMN: firstname }});
           expected: 'NOT EMPTY'
-      - command: Проверяем значения SQL ответа-SQL_RS_3
+      - command: Check SQL response values-SQL_RS_3
         params:
           text: |-
             ROW: 2
             COLUMN: lastname
           expected: 'Truehanovich'
-      - command: Проверяем значения SQL ответа-SQL_RS_3
+      - command: Check SQL response values-SQL_RS_3
         params:
           text: |-
             COLUMN: username
@@ -103,7 +103,7 @@ tests:
 
   - name: Test with Postgres DB (check truncation attachment)
     steps:
-      - command: Выполнить поисковый запрос в БД-localDB
+      - command: Execute searching request in DB-localDB
         params:
           text: |-
             SELECT * FROM abc_logs ORDER BY "userId" DESC;

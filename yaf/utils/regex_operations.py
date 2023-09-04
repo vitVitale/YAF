@@ -35,6 +35,6 @@ def substr(text: str, regex: str, group: int = 0):
         try:
             return result.group(group)
         except IndexError:
-            raise Exception(f'В результате отсутствует группа [ {group} ]!')
-    raise Exception(f'В тексте отсутствуют подстроки,\n'
-                    f'соответствующие регулярному выражению: {regex}')
+            raise Exception(f'No group in the result [ {group} ]!')
+    raise Exception(f'There are no substrings in the text \n'
+                    f'that match the regular expression: {regex}')

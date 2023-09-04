@@ -10,7 +10,7 @@ class CollectedTests:
     def __init__(self):
         global TEST_MODEL
         if TEST_MODEL is None:
-            raise Exception("env.TEST_MODEL не задан!")
+            raise Exception("env.TEST_MODEL not set!")
 
         self.test_set = []
         self.preset_teardown = {}
@@ -33,7 +33,7 @@ class CollectedTests:
             try:
                 self.tests_dict = yaml.safe_load(stream)
             except yaml.YAMLError as exc:
-                raise Exception(f'Не удалось распарсить файл {file_name} \n{exc.__cause__}')
+                raise Exception(f'Failed to parse file {file_name} \n{exc.__cause__}')
 
         self.feature = self.tests_dict['feature']
         self.epic = self.tests_dict['epic']
@@ -88,7 +88,7 @@ class CollectedTests:
                         try:
                             before_after.append(setup_block[instruction])
                         except:
-                            print(f'Отсутствует блок инструкции [ {instruction} ] !!')
+                            print(f'Instruction block missing [ {instruction} ] !!')
                             before_after.append(None)
                 elif isinstance(setup_block, list):
                     return setup_block

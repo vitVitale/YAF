@@ -5,34 +5,34 @@ feature: Scopes
 tests:
   - name: test1
     steps:
-      - command: Сохранить значение в переменную
+      - command: Save value to variable
         params:
           text: |-
             {{ REGEX ([A-Z]|[0-9]){8} }}
           expected: 'VARVAR_1'
-      - command: Сохранить значение в переменную
+      - command: Save value to variable
         params:
           text: |-
             {{ REGEX ([A-Z]|[0-9]){8} }}
           expected: {scope: env, name: VARVAR_2}
-      - command: Сохранить значение в переменную
+      - command: Save value to variable
         params:
           text: |-
             {{ REGEX ([A-Z]|[0-9]){8} }}
           expected: {scope: global, name: VARVAR_3}
-      - command: Сохранить значение в переменную
+      - command: Save value to variable
         params:
           text: |-
             {{ REGEX ([A-Z]|[0-9]){8} }}
           expected: {scope: env_file, name: VARVAR_4}
-      - command: Выполнить Bash скрипт
+      - command: Execute Bash script
         params:
           text: 'echo {{ env.VARVAR_1 : str(this)[3:] }} {{ env.VARVAR_2 }} {{ global.VARVAR_3 }} {{ env_file.VARVAR_4 : str(this)[:4] }}'
           expected: 'NO SAVE'
 
   - name: test2
     steps:
-      - command: Выполнить Bash скрипт
+      - command: Execute Bash script
         params:
           text: 'echo  {{ global.VARVAR_3 }} {{ env_file.VARVAR_4 }}'
           expected: 'NO SAVE'

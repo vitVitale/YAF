@@ -6,27 +6,27 @@ from .base_operations import Base
 class CacheSteps(Base):
 
     @staticmethod
-    @allure.step('Создать схему в Cache')
+    @allure.step('Create schema in Cache')
     def create_cache_scheme(client_name, schema):
         allure.attach(
             CacheSteps.create_delete_opr(client_name=client_name,
                                          schema=schema,
                                          need_delete=False),
-            'Получена схема: ',
+            'Receive scheme: ',
             allure.attachment_type.TEXT)
 
     @staticmethod
-    @allure.step('Удалить схему в Cache')
+    @allure.step('Delete schema in Cache')
     def delete_cache_scheme(client_name, schema):
         allure.attach(
             CacheSteps.create_delete_opr(client_name=client_name,
                                          schema=schema,
                                          need_delete=True),
-            'Удалена схема: ',
+            'Scheme deleted: ',
             allure.attachment_type.TEXT)
 
     @staticmethod
-    @allure.step('Записать значение в Cache')
+    @allure.step('Write value into Cache')
     def put_into_cache(client_name, text):
         client = CacheSteps.connections.get_client(client_name)
         parsed_dict = parse(CacheSteps.render_and_attach(text))
@@ -34,33 +34,33 @@ class CacheSteps(Base):
                             key=parsed_dict['key'],
                             value=parsed_dict['value'],
                             expired=parsed_dict['expired'])
-        info_mess = 'Документ записанный в Cache - \n'
+        info_mess = 'Document written to Cache - \n'
         CacheSteps.attach_request_block(info_mess=info_mess,
                                         body=parsed_dict['value'],
                                         save=True)
 
     @staticmethod
-    @allure.step('Получить значение из Cache')
+    @allure.step('Get value from Cache')
     def get_from_cache(client_name, text):
         client = CacheSteps.connections.get_client(client_name)
         parsed_dict = parse(CacheSteps.render_and_attach(text))
         response = client.get_to_cache(scheme=parsed_dict['scheme'],
                                        key=parsed_dict['key'])
-        info_mess = 'Документ полученный из Cache - \n'
+        info_mess = 'Document received from Cache - \n'
         CacheSteps.attach_response_block(info_mess=info_mess,
                                          body=response)
 
     @staticmethod
-    @allure.step('Удалить из Cache')
+    @allure.step('Delete from Cache')
     def delete_from_cache(client_name, text):
         client = CacheSteps.connections.get_client(client_name)
         parsed_dict = parse(CacheSteps.render_and_attach(text))
         client.drop_in_cache(scheme=parsed_dict['scheme'],
                              key=parsed_dict['key'],
                              drop_all=parsed_dict['allIn'])
-        info_mess = 'Документ удаленный из Cache по ключу - \n'
+        info_mess = 'Document deleted from Cache by key - \n'
         if parsed_dict['allIn']:
-            info_mess = 'Очищена схема в Cache - \n'
+            info_mess = 'Cleaned schema in Cache - \n'
             allure.attach(parsed_dict['scheme'], info_mess,
                           allure.attachment_type.TEXT)
         else:

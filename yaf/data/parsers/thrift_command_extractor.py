@@ -12,14 +12,14 @@ def extract_service(text):
     return single_regex_find_non_none(
         text=text,
         regex=r'SERVICE: (.+)',
-        not_found_msg='Отсутствует SERVICE!')
+        not_found_msg='Missing SERVICE!')
 
 
 def extract_method(text):
     return single_regex_find_non_none(
         text=text,
         regex=r'METHOD: (.+)',
-        not_found_msg='Отсутствует METHOD!')
+        not_found_msg='Missing METHOD!')
 
 
 def extract_args(text):

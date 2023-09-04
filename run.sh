@@ -39,7 +39,7 @@ TAGS: ${TAGS}
 PARALLEL: ${THREADS}
 BUILD_REPORT: ${isAllureNeeded}
 JIRA_ENABLE: ${JIRA}"""
-cd yaffat/app
+cd yaf/app
 if [ -z "${NUM}" ]; then
   echo "ONLY TEST RUN"
   python -m pytest -m "${TAGS}" ${ALLURE_PLUGIN} tests.py::TestRunner::test_ --no-header --no-summary
@@ -56,7 +56,7 @@ if [ ${isAllureNeeded} = true ]; then
 fi
 chmod -R 777 test_model/allure-result || echo "NO ALLURE RESULTS !"
 if [ "${JIRA}" = "YES" ]; then
-  cd yaffat/app && python3 test_cycle.py "$JIRA_PROJECT" "$JIRA_USER" "$JIRA_PASS"
+  cd yaf/app && python3 test_cycle.py "$JIRA_PROJECT" "$JIRA_USER" "$JIRA_PASS"
 fi
 echo """
 ////////////////////////////////////

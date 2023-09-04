@@ -37,7 +37,7 @@ class KafkaListener(threading.Thread):
         self.network = get_network_settings(config)
         self.out_topics = config['out_topics']
         # self.group_id = config['group_id']
-        # TODO:: убрать костыль для многопроцессных запусков тестов
+        # TODO:: remove crutch for multi-process test runs
         self.group_id = config['group_id'] + f'{randrange(1000)}'
         self.auto_offset_reset = config.get('auto_offset_reset', 'latest')
         self._consumed_list: List[KafkaRecord] = []
@@ -162,7 +162,7 @@ class KafkaCl:
                 on_delivery=delivery_report)
             assert self._producer.flush(timeout=15) == 0
         except Exception as e:
-            raise Exception(f"Не смогли отправить в топик {topic}\n{e}")
+            raise Exception(f"Could not send to topic {topic}\n{e}")
 
     def get_last_message_from(self, topic: str, partition: int = 0):
         try:
@@ -172,8 +172,8 @@ class KafkaCl:
                 and (True if partition == -1 else x.partition == partition)
             ][-1]
         except IndexError:
-            raise Exception(f'Отсутствуют записи для топика: {topic} '
-                            f'и партиции: {"all" if partition == -1 else partition}')
+            raise Exception(f'Missing records for topic: {topic} '
+                            f'and partitions: {"all" if partition == -1 else partition}')
 
     def find_message_by_mark(self, marker: str, time, avsc=None):
         count = 0
@@ -217,6 +217,6 @@ class KafkaCl:
                   .format(result.topic, result.partition, result.key, result.headers, result.value))
             return result
         else:
-            raise AssertionError(f"Не смогли найти сообщение из кафки по маркеру [ {marker} ] по таймауту [ {time}-сек ]")
+            raise AssertionError(f"Could not find message from Kafka by marker [ {marker} ] by timeout [ {time}-sec ]")
 
 # TODO:: new method with search msg by condition and proto decode

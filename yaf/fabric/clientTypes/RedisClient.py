@@ -29,7 +29,7 @@ class RedisCl:
         expired = int(expired) if expired is not None else None
         assert self.client.set(name=key,
                                value=value,
-                               ex=expired), f'Не удалось положить по ключу {key} !'
+                               ex=expired), f'Failed to put by key {key} !'
 
     def get_from_cache(self, key, timeout=5):
         types = self.client.type(key)
@@ -43,4 +43,4 @@ class RedisCl:
                     return re.sub(r'\\"}"', '"}', temp1).replace('\\', '')
                 return value
             sleep(0.5)
-        raise Exception(f'Не удалось получить обект из Redis по ключу [{key}] !!')
+        raise Exception(f'Failed to get object from Redis by key [{key}] !!')

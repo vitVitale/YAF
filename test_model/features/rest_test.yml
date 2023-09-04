@@ -1,0 +1,180 @@
+---
+epic: Python ST framework
+feature: REST - STUB interaction checks
+
+setup:
+  once:
+    after:
+      - command: Execute Bash script
+        params:
+          text: |-
+            sleep 0.5
+          expected: 'NO SAVE'
+      - command: Send request REST-stubAPI
+        params:
+          text: |-
+            curl -X DELETE '{{ BASE_PATH stubAPI }}/stubs'
+          expected: 'HTTP CODE: 200'
+      - command: Send request REST-stubAPI
+        params:
+          text: |-
+            curl -X DELETE '{{ BASE_PATH stubAPI }}/requests'
+          expected: 'HTTP CODE: 200'
+
+########################################################################################################################
+
+tests:
+  - name: Stub interaction checks
+    test_data:
+      - { query: 'indie for New Year', code: '201' }
+      - { query: 'indie rock about New Year', code: '201' }
+      - { query: 'New Year blues', code: '201' }
+      - { query: 'blues in New Year style', code: '201' }
+      - { query: 'Christmas soul', code: '201' }
+      - { query: 'soul for New Year', code: '200' }
+      - { query: 'New Year jazz', code: '200' }
+      - { query: 'rap about New Year', code: '200' }
+      - { query: 'New Year rap', code: '200' }
+      - { query: 'jazz for New Year', code: '200' }
+      - { query: 'Christmas classics', code: '200' }
+      - { query: 'classical music for New Year', code: '401' }
+      - { query: 'songs from holiday movies', code: '401' }
+      - { query: 'songs from New Year movies', code: '401' }
+      - { query: 'our songs about New Year', code: '401' }
+      - { query: 'our New Year songs', code: '401' }
+      - { query: 'about New Year gifts', code: '305' }
+      - { query: 'New Year female vocals', code: '305' }
+      - { query: 'woman sings New Year songs', code: '305' }
+      - { query: 'Christmas songs in male performance', code: '305' }
+      - { query: 'men sing Christmas songs', code: '404' }
+      - { query: 'New Year acoustic guitar', code: '404' }
+    steps:
+      - command: Send request REST-stubAPI
+        params:
+          text: |-
+            curl -X PUT '{{ BASE_PATH stubAPI }}/define_stub?url=myStub/{{ REGEX [a-z]{9} }}' \
+            -H 'Content-Type: application/json' \
+            -H 'accept: */*' \
+            -d '{
+              "status": {{ code }},
+              "body": {
+                "query": "{{ query }}",
+                "minimalAmount": {{ REGEX 1[0-9]{10} }}
+              }
+            }'
+          expected: 'HTTP CODE: 200'
+      - command: Send request REST-stubAPI
+        params:
+          text: |-
+            curl -X POST '{{ BASE_PATH stubAPI }}/stub/{{ JPATH : RS_1 : $.url }}' \
+            -H 'Content-Type: application/json' \
+            -H 'accept: */*' \
+            -d '{ "stat": "xma" }'
+          expected: 'HTTP CODE: {{ code }}'
+      - command: Check value of response field
+        params:
+          text: |-
+            JPATH : RS_2 : $.query
+          expected: '{{ query }}'
+
+########################################################################################################################
+
+  - name: Stub asynchronous interaction checks
+    test_data:
+      - { query: 'Gutseryev', code: '201' }
+      - { query: 'eighth of March at work', code: '201' }
+      - { query: 'office eighth of March', code: '201' }
+      - { query: 'selection of holiday songs for colleagues', code: '201' }
+      - { query: 'greetings from artists for women', code: '201' }
+      - { query: 'rock music in female performance', code: '303' }
+      - { query: 'pop music in female performance', code: '303' }
+      - { query: 'electronic music in FLAC format', code: '303' }
+      - { query: 'indie music in high quality', code: '303' }
+      - { query: 'pop music in FLAC format', code: '303' }
+      - { query: 'hip-hop music in FLAC format', code: '303' }
+      - { query: 'classical music in FLAC format', code: '403' }
+      - { query: 'jazz music in FLAC format', code: '403' }
+      - { query: 'rock in FLAC format', code: '403' }
+      - { query: 'playlist with music in FLAC format', code: '403' }
+      - { query: 'classic rock', code: '403' }
+      - { query: 'classic rave', code: '403' }
+      - { query: 'hip-hop classics', code: '403' }
+      - { query: 'jazz classics', code: '200' }
+      - { query: 'pop music of the 2000s', code: '200' }
+      - { query: 'Grammy 2021 nominee', code: '200' }
+      - { query: 'Grammy 2021 laureate', code: '200' }
+      - { query: 'Grammy Awards 2021', code: '200' }
+      - { query: 'Grammys', code: '200' }
+      - { query: "Valentine's Day playlist", code: '200' }
+    steps:
+      - command: Send asynchronous request REST-stubAPI
+        params:
+          text: |-
+            curl -X PUT '{{ BASE_PATH stubAPI }}/define_stub?url=myStub/{{ REGEX [a-z]{9} }}' \
+            -H 'Content-Type: application/json' \
+            -H 'accept: */*' \
+            -d '{
+              "status": {{ code }},
+              "body": {{ GET_FILE stub_body.json }}
+            }'
+      - command: Get asynchronous response REST-stubAPI
+        params:
+          text: |-
+            RQ_1
+          expected: 'HTTP CODE: 200'
+      - command: Send asynchronous request REST-stubAPI
+        params:
+          text: |-
+            curl -X GET '{{ BASE_PATH stubAPI }}/stub/{{ JPATH : RS_1 : $.url }}' \
+            -H 'Content-Type: application/json' \
+            -H 'accept: */*'
+      - command: Get asynchronous response REST-stubAPI
+        params:
+          text: |-
+            RQ_2
+          expected: 'HTTP CODE: {{ code }}'
+      - command: Check value of response field
+        params:
+          text: |-
+            JPATH : RS_2 : $.payload.message
+          expected: '{{ query }}'
+
+########################################################################################################################
+
+  - name: Viewing information about stub requests
+    test_data:
+      - { query: 'Call Joy!', url_params: '' }
+      - { query: 'Call Joy!', url_params: '?fetch=body' }
+      - { query: 'Call Joy!', url_params: '?fetch=headers' }
+      - { query: 'Call Joy!', url_params: '?fetch=params' }
+      - { query: 'Call Joy!', url_params: '?fetch=method' }
+    steps:
+      - command: Send request REST-stubAPI
+        params:
+          text: |-
+            curl -X PUT '{{ BASE_PATH stubAPI }}/define_stub?url=myStub/experiment/end' \
+            -H 'Content-Type: application/json' \
+            -H 'accept: */*' \
+            -d '{
+              "status": 200,
+              "body": {
+                "query": "{{ query }}",
+                "minimalAmount": {{ REGEX 1[0-9]{10} }}
+              }
+            }'
+          expected: 'HTTP CODE: 200'
+      - command: Send request REST-stubAPI
+        params:
+          text: |-
+            curl -X POST '{{ BASE_PATH stubAPI }}/stub/myStub/experiment/end?q=mySuperQuery&isa=1109&isTest=true' \
+            -H 'Content-Type: application/json' \
+            -H 'accept: */*' \
+            -d '{ "stat": "xma" }'
+          expected: 'HTTP CODE: 200'
+      - command: Send request REST-stubAPI
+        params:
+          text: |-
+            curl -X GET '{{ BASE_PATH stubAPI }}/request/myStub/experiment/end{{ url_params }}' \
+            -H 'accept: */*'
+          expected: 'HTTP CODE: 200'
+

@@ -24,14 +24,14 @@ class SqlDbCl:
 
     def execute(self, query: str):
         if query is None:
-            raise Exception('Не указан запрос!')
+            raise Exception('Request not specified!')
         res = self._exec(query)
         self.session.commit()
         return res.rowcount > 0
 
     def fetch(self, query: str, empty_required: bool):
         if query is None:
-            raise Exception('Не указан запрос!')
+            raise Exception('Request not specified!')
         return self._get_empty_or_not_result_by_timeout(query, 10, empty_required)
 
     def _get_empty_or_not_result_by_timeout(self, query, timeout, empty):
@@ -43,7 +43,7 @@ class SqlDbCl:
             sleep(0.5)
         if (res.rowcount > 0) != empty:
             return ResultSet(cursor=res.cursor) if not empty else ResultSet()
-        raise AssertionError(f'Неверный ожидаемый результат, кол-во записей: {res.rowcount}')
+        raise AssertionError(f'Wrong expected result, number of records: {res.rowcount}')
 
     def _exec(self, query):
         try:
@@ -97,5 +97,5 @@ class ResultSet:
         try:
             return column_values[int(row)-1]
         except IndexError as ex:
-            raise AssertionError(f'Строки {row} не существует!\n'
-                                 f'Размер выдачи {len(column_values)}.')
+            raise AssertionError(f'Row {row} does not exist!\n'
+                                 f'Results set size {len(column_values)}.')

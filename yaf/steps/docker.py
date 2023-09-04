@@ -10,7 +10,7 @@ from yaf.data.parsers.docker_command_extractor import parse
 class DockerSteps(Base):
 
     @staticmethod
-    @allure.step('Управлять ST окружением')
+    @allure.step('Control ST environment')
     def control_st_environment(text):
         parsed_dict = parse(DockerSteps.render_and_attach(text))
         timeout = parsed_dict['timeout']
@@ -20,10 +20,10 @@ class DockerSteps(Base):
         try:
             result = DockerSteps._run_command(command, timeout)
         except subprocess.CalledProcessError as ex:
-            raise Exception(f'Ошибка вызова для cmd:\n{ex.cmd}\n'
-                            f'Причины:\n{ex.stderr.decode("utf-8")}')
+            raise Exception(f'Call error for cmd:\n{ex.cmd}\n'
+                            f'Causes:\n{ex.stderr.decode("utf-8")}')
         result = f'{result.stderr.decode("utf-8")}'
-        info_mess = 'Полученный консольный лог - \n'
+        info_mess = 'Received console log - \n'
         DockerSteps.attach_request_block(info_mess=info_mess,
                                          save=False,
                                          body=result)
@@ -59,8 +59,8 @@ class DockerSteps(Base):
                     return
             allure.attach(container_logs, f'Healthcheck UNREACHABLE [{timeout} sec.] !!!  - \n',
                           allure.attachment_type.TEXT)
-            raise Exception(f'Не удалось убедиться в жизнеспособности {container} за {timeout} сек.\n'
-                            f'Возможны ошибки в логах контейнера.')
+            raise Exception(f'Failed to verify {container} viability for {timeout} seconds.\n'
+                            f'Possible errors in the container logs.')
 
     @staticmethod
     def _run_command(command, timeout):

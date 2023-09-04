@@ -24,7 +24,7 @@ try:
           f'JiraUser:   {str(sys.argv[2])}\n'
           f'JiraPass:   {"*****" if str(sys.argv[3]) else "N/A"}\n')
 except IndexError as ex:
-    raise Exception(f'Аргументы не переданы !')
+    raise Exception(f'Arguments not passed !')
 
 suites_csv_path: final(str) = os.getcwd()+'/../../test_model/allure-report/data/suites.csv'
 jira_server: final(str) = 'https://jira.your_server.com/rest'

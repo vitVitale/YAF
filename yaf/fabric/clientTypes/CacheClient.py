@@ -46,7 +46,7 @@ class CacheCl:
         response = self.client.get_cache(scheme).get(key=key)
         if response is not None:
             return response
-        raise Exception(f'Не удалось получить обект из [{scheme}] по ключу [{key}] !!')
+        raise Exception(f'Failed to get object from [{scheme}] by key [{key}] !!')
 
     def drop_in_cache(self, scheme, key, drop_all: bool):
         if drop_all:

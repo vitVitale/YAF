@@ -16,7 +16,7 @@ class MongoCl:
         result = collection.insert_many(data_obj) \
             if isinstance(data_obj, list) \
             else collection.insert_one(data_obj)
-        assert result.acknowledged, f'Не удалось произвести вставку данных !!'
+        assert result.acknowledged, f'Failed to insert data !!'
         return '\n'.join([str(x) for x in result.inserted_ids]) if isinstance(result, InsertManyResult) \
             else str(result.inserted_id)
 
@@ -31,11 +31,11 @@ class MongoCl:
     def update_data(self, database, collection_name, marker: str, data: str):
         collection = eval(f'self.client.{database}.{collection_name}')
         result = collection.update_many(loads(marker), loads(data))
-        assert result.acknowledged, f'Не удалось произвести обновление данных !!'
+        assert result.acknowledged, f'Failed to update data !!'
         return result.raw_result['updatedExisting'], result.raw_result['nModified']
 
     def delete_data(self, database, collection_name, marker: str):
         collection = eval(f'self.client.{database}.{collection_name}')
         result = collection.delete_many(loads(marker))
-        assert result.acknowledged, f'Не удалось произвести удаление данных !!'
+        assert result.acknowledged, f'Failed to delete data !!'
         return result.deleted_count

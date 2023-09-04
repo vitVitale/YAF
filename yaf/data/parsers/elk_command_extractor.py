@@ -15,7 +15,7 @@ def extract_index(text):
     return single_regex_find_non_none(
         text=text,
         regex=r'INDEX: (.+)',
-        not_found_msg='Не указан индекс !')
+        not_found_msg='Index not specified !')
 
 
 def extract_type(text):

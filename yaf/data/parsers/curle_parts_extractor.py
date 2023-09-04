@@ -13,14 +13,14 @@ def extract_http_method(curl):
     return single_regex_find_non_none(
         text=curl,
         regex=r'-X (GET|POST|PUT|DELETE|PATCH) ',
-        not_found_msg='в cURL запросе отсутствует HttpMethod!')
+        not_found_msg='cURL request missing HttpMethod!')
 
 
 def extract_url(curl):
     return single_regex_find_non_none(
         text=curl,
         regex=r' \'(http.+)\'',
-        not_found_msg='в cURL запросе отсутствует URL!')
+        not_found_msg='URL missing in cURL request!')
 
 
 def extract_headers(curl):
@@ -34,5 +34,5 @@ def extract_body(curl):
     try:
         return re.findall(r'-d \'(.+)\'', curl, re.DOTALL).pop()
     except IndexError as e:
-        print('в cURL запросе отсутствует body!')
+        print('cURL request missing body!')
         return None
