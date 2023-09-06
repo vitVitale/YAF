@@ -1,12 +1,21 @@
-version: "3.0"
+version: "3.8"
 services:
   tests_runner:
+    platform: "linux/amd64"
     build:
       context: .
       dockerfile: Dockerfile
+      target: yaf_runner
+      args:
+        python: "3.10.13"
+      platforms:
+        - "linux/amd64"
+        - "linux/arm64"
 #    image: vitvitale/yaf_runner:1.8.7
     container_name: tests_runner
     restart: 'no'
+    security_opt:
+      - seccomp:unconfined
     networks:
       - ST_network
     volumes:
